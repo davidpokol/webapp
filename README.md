@@ -1,8 +1,8 @@
 # Webapp
 
-Web application made for **Web application development** class.
+Web application made for **Web application development** subject.
 
-## Authors
+## Members
 
 - [@neczemante](https://www.github.com/neczemate)
 - [@ferencorgovan](https://www.github.com/ferencorgovan)
