@@ -4,8 +4,10 @@ import './App.css';
 import { Routes, Route } from 'react-router-dom';
 import Layout from './components/layout/Layout';
 import Home from './components/home/Home';
-import Registration from './components/Registration';
-import Login from './components/Login';
+import Registration from './components/auth/Registration';
+import Login from './components/auth/Login';
+import ProfilePage from './components/ProfilePage';
+import CreateRecipe from './components/CreateRecipe';
 
 function App() {
   return (
@@ -15,6 +17,8 @@ function App() {
           <Route path='/' element={<Home />} />
           <Route path='/registration' element={<Registration />}/>
           <Route path='/login' element={<Login />}/>
+          <Route path='/:username' element={<ProfilePage />}/>
+          <Route path='/create' element={<CreateRecipe />}/>
         </Route>
       </Routes>
     </div>
