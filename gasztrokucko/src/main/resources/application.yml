@@ -1,0 +1,8 @@
+server:
+  port: 5000
+
+spring:
+  datasource:
+    url: ${env.POSTGRES_DB_URL}
+    username: ${env.POSTGRES_DB_USER}
+    password: ${env.POSTGRES_DB_PASSWORD}
