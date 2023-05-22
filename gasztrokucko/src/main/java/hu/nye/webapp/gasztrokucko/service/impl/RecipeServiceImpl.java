@@ -25,7 +25,7 @@ public class RecipeServiceImpl implements RecipeService {
     }
 
     @Override
-    public Optional<RecipeDTO> findByID(Long id) {
+    public Optional<RecipeDTO> findById(Long id) {
         return Optional.empty();
     }
 

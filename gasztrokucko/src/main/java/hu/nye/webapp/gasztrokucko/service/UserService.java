@@ -8,7 +8,7 @@ import java.util.Optional;
 public interface UserService {
     List<UserDTO> findAll();
 
-    Optional<UserDTO> findByID(Long id);
+    Optional<UserDTO> findById(Long id);
 
     UserDTO create(UserDTO userDTO);
 

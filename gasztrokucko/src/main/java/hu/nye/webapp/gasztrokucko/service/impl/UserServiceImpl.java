@@ -25,7 +25,7 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
-    public Optional<UserDTO> findByID(Long id) {
+    public Optional<UserDTO> findById(Long id) {
         return Optional.empty();
     }
 

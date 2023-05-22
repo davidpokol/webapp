@@ -9,7 +9,7 @@ public interface RecipeService {
 
     List<RecipeDTO> findAll();
 
-    Optional<RecipeDTO> findByID(Long id);
+    Optional<RecipeDTO> findById(Long id);
 
     RecipeDTO create(RecipeDTO recipeDTO);
 
