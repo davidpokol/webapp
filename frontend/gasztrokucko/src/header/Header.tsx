@@ -19,7 +19,7 @@ const Header = () => {
 
     if (isLoggedIn) {
         return (
-            <Box as="header" bg="#3E3E3E" color="#F4722B">
+            <Box as="header" bg="#3E3E3E" color="#F4722B" className="tillana-font">
                 <Flex w="100%" px="5" py="3" align="center" justify="space-between">
 
                     <Box as={Link} to="/">
@@ -29,8 +29,8 @@ const Header = () => {
                     <Menu>
                         <MenuButton as={Avatar} size="md" src="avatar.png" cursor="pointer"/>
                         <MenuList>
-                            <MenuItem>Profil</MenuItem>
-                            <MenuItem>Recept hozzáadása</MenuItem>
+                            <MenuItem as={Link} to={"/username"}>Profil</MenuItem>
+                            <MenuItem as={Link} to={"/create"}>Recept hozzáadása</MenuItem>
                             <MenuItem onClick={handleLogout}>Kijelentkezés</MenuItem>
                         </MenuList>
                     </Menu>

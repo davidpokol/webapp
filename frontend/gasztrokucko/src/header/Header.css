@@ -1,3 +1,12 @@
+@font-face {
+    font-family: 'Tillana';
+    src: url('../fonts/Tillana-Medium.ttf') format('truetype');
+}
+
+.tillana-font {
+    font-family: 'Tillana', cursive;
+}
+
 option {
     color: #F4722B;
 }

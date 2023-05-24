@@ -19,14 +19,21 @@ const Login = () => {
                     {({ handleSubmit, errors, touched }) => (
                         <form onSubmit={handleSubmit}>
                             <VStack spacing={4} align="flex-start">
-                                <FormControl>
+                                <FormControl
+                                    isInvalid={!!errors.email && touched.email}>
                                     <FormLabel htmlFor="email">Email</FormLabel>
                                     <Field
                                         as={Input}
                                         id="email"
                                         name="email"
                                         type="email"
-                                        variant="filled" />
+                                        variant="filled"
+                                        validate={(value: string) => {
+                                            if (value.length == 0) {
+                                                return "A email mező nem lehet üres!"
+                                            }
+                                        }} />
+                                    <FormErrorMessage>{errors.email}</FormErrorMessage>
                                 </FormControl>
                                 <FormControl
                                     isInvalid={!!errors.password && touched.password}>
@@ -38,8 +45,8 @@ const Login = () => {
                                         type="password"
                                         variant="filled"
                                         validate={(value: string) => {
-                                            if (value.length <= 5) {
-                                                return "A jelszónak hosszabnak kell lennie 5 karakternél!"
+                                            if (value.length == 0) {
+                                                return "A jelszó mező nem lehet üres!"
                                             }
                                         }} />
                                     <FormErrorMessage>{errors.password}</FormErrorMessage>
