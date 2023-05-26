@@ -1,5 +1,6 @@
 package hu.nye.webapp.gasztrokucko.controller;
 
+import hu.nye.webapp.gasztrokucko.dto.RecipeDTO;
 import hu.nye.webapp.gasztrokucko.dto.UserDTO;
 import hu.nye.webapp.gasztrokucko.exception.InvalidUserRequestException;
 import hu.nye.webapp.gasztrokucko.service.UserService;
@@ -15,7 +16,7 @@ import java.util.stream.Collectors;
 
 @RestController
 @AllArgsConstructor
-@RequestMapping("/user")
+@RequestMapping("/users")
 public class UserController {
 
     private final UserService userService;
@@ -25,11 +26,28 @@ public class UserController {
         return ResponseEntity.ok().body(null);
     }
 
+    @PostMapping("/add")
     public ResponseEntity<UserDTO> create(@Valid @RequestBody UserDTO userDTO, BindingResult bindingResult) {
         checkForRequestErrors(bindingResult);
 
         return ResponseEntity.ok().body(null);
     }
+
+    @GetMapping("/{username}/fav-recipes")
+    public ResponseEntity<RecipeDTO> findFavRecipes(@PathVariable String username) {
+        return ResponseEntity.ok().body(null);
+    }
+
+    @PostMapping("/{username}/fav-recipes/{id}")
+    public ResponseEntity<RecipeDTO> favorite(@PathVariable String username, @PathVariable Long id) {
+        return ResponseEntity.ok().body(null);
+    }
+
+    @PostMapping("/{username}/fav-recipes/un-fav/{id}")
+    public ResponseEntity<RecipeDTO> unfavorite(@PathVariable String username, @PathVariable Long id) {
+        return ResponseEntity.ok().body(null);
+    }
+
     private void checkForRequestErrors(BindingResult bindingResult) {
         if (bindingResult.hasErrors()) {
             List<String> messages = bindingResult.getFieldErrors()

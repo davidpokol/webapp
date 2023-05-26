@@ -15,11 +15,12 @@ import java.util.stream.Collectors;
 
 @RestController
 @AllArgsConstructor
+@RequestMapping("/recipes")
 public class RecipeController {
 
     private final RecipeService recipeService;
 
-    @GetMapping("/recipes")
+    @GetMapping
     public ResponseEntity<List<RecipeDTO>> findAll() {
         return ResponseEntity.ok().body(null);
     }
@@ -29,44 +30,30 @@ public class RecipeController {
         return ResponseEntity.ok().body(null);
     }
 
-    @GetMapping("/recipe/{id}")
+    @GetMapping("/{id}")
     public ResponseEntity<RecipeDTO> findById(@PathVariable Long id) {
         return ResponseEntity.ok().body(null);
     }
 
-    @PutMapping("/recipe/{id}")
+    @PutMapping("/{id}")
     public ResponseEntity<RecipeDTO> update(@PathVariable Long id, @Valid @RequestBody RecipeDTO recipeDTO, BindingResult bindingResult) {
         checkForRequestErrors(bindingResult);
 
         return ResponseEntity.ok().body(null);
     }
 
-    @DeleteMapping("/recipe/{id}")
+    @DeleteMapping("/{id}")
     public ResponseEntity<Void> delete(@PathVariable Long id) {
         return ResponseEntity.noContent().build();
     }
 
-    @PostMapping("/add-recipe")
+    @PostMapping("/add")
     public ResponseEntity<RecipeDTO> create(@Valid @RequestBody RecipeDTO recipeDTO, BindingResult bindingResult) {
         checkForRequestErrors(bindingResult);
 
         return ResponseEntity.ok().body(null);
     }
 
-    @PostMapping("{username}/fav-recipe/{id}")
-    public ResponseEntity<RecipeDTO> favorite(@PathVariable String username, @PathVariable Long id) {
-        return ResponseEntity.ok().body(null);
-    }
-
-    @GetMapping("/{username}/fav-recipes")
-    public ResponseEntity<RecipeDTO> findFavRecipes(@PathVariable String username) {
-        return ResponseEntity.ok().body(null);
-    }
-
-    @PostMapping("{username}/unfav-recipe/{id}")
-    public ResponseEntity<RecipeDTO> unfavorite(@PathVariable String username, @PathVariable Long id) {
-        return ResponseEntity.ok().body(null);
-    }
     private void checkForRequestErrors(BindingResult bindingResult) {
         if (bindingResult.hasErrors()) {
             List<String> messages = bindingResult.getFieldErrors()
