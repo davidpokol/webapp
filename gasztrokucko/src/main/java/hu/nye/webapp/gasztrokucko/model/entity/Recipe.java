@@ -1,10 +1,13 @@
 package hu.nye.webapp.gasztrokucko.model.entity;
 
-import com.fasterxml.jackson.annotation.JsonBackReference;
-import hu.nye.webapp.gasztrokucko.model.enums.Category;
-import hu.nye.webapp.gasztrokucko.model.enums.Difficulty;
+import com.fasterxml.jackson.annotation.JsonIgnore;
+import hu.nye.webapp.gasztrokucko.model.enums.recipe.Category;
+import hu.nye.webapp.gasztrokucko.model.enums.recipe.Difficulty;
+import hu.nye.webapp.gasztrokucko.model.enums.recipe.ModificationType;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.Size;
+import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
@@ -18,6 +21,7 @@ import java.util.Set;
 @Getter
 @Setter
 @NoArgsConstructor
+@AllArgsConstructor
 public class Recipe {
 
     @Id
@@ -34,12 +38,23 @@ public class Recipe {
     private Long id;
 
     @NotBlank
-    @Column(name = "NAME")
+    @Size(min = 5, message = "{validation.name.size.too_short}")
+    @Column(name = "NAME", length = 60)
     private String name;
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "CREATED_BY", nullable = false)
     private User createdBy;
+
+    @NotBlank
+    @Size(min = 5, message = "{validation.name.size.too_short}")
+    @Column(name = "LAST_MODIFIED", length = 50)
+    private String lastModified;
+
+    @Enumerated(EnumType.STRING)
+    @NotBlank
+    @Column(name = "MODIFICATION_TYPE")
+    private ModificationType recipeModificationType;
 
     @Enumerated(EnumType.STRING)
     @NotBlank
@@ -51,21 +66,21 @@ public class Recipe {
     @Column(name = "DIFFICULTY")
     private Difficulty difficulty;
 
-    @ElementCollection //TODO ??
+    @ElementCollection
     @CollectionTable(name = "INGREDIENTS")
-    @Column(name = "INGREDIENT")
+    @Column(name = "INGREDIENT", length = 30)
     private List<@NotBlank String> ingredients;
 
     @Lob // learn more @ https://www.baeldung.com/hibernate-lob
     @NotBlank
-    @Column(name = "INSTRUCTIONS")
+    @Column(name = "INSTRUCTIONS", columnDefinition = "TEXT")
     private String instructions;
 
     @Lob
-    @Column(name = "PHOTO", columnDefinition="BLOB")
+    @Column(name = "IMAGE", columnDefinition = "BYTEA", nullable = false)
     private byte[] photo;
 
-    @ManyToMany(mappedBy = "favRecipes", fetch = FetchType.LAZY)
-    @JsonBackReference
+    @ManyToMany(mappedBy = "favRecipes", fetch = FetchType.LAZY, cascade = CascadeType.ALL)
+    @JsonIgnore
     private Set<User> favoritedBy = new HashSet<>();
 }

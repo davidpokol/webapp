@@ -1,4 +1,4 @@
-package hu.nye.webapp.gasztrokucko.model.enums;
+package hu.nye.webapp.gasztrokucko.model.enums.recipe;
 
 public enum Difficulty {
     EASY,

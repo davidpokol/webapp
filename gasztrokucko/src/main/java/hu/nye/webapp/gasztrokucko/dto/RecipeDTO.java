@@ -1,8 +1,8 @@
 package hu.nye.webapp.gasztrokucko.dto;
 
 import hu.nye.webapp.gasztrokucko.model.entity.User;
-import hu.nye.webapp.gasztrokucko.model.enums.Category;
-import hu.nye.webapp.gasztrokucko.model.enums.Difficulty;
+import hu.nye.webapp.gasztrokucko.model.enums.recipe.Category;
+import hu.nye.webapp.gasztrokucko.model.enums.recipe.Difficulty;
 import jakarta.validation.constraints.NotBlank;
 import lombok.Getter;
 import lombok.NoArgsConstructor;

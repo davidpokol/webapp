@@ -2,7 +2,9 @@ package hu.nye.webapp.gasztrokucko.model.entity;
 
 import com.fasterxml.jackson.annotation.JsonManagedReference;
 import jakarta.persistence.*;
+import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.Size;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
@@ -30,21 +32,24 @@ public class User {
     private Long id;
 
     @NotBlank
-    @Column(name = "USERNAME")
+    @Size(min = 5, message = "{validation.name.size.too_short}")
+    @Column(name = "USERNAME", length = 30)
     private String username;
 
     @NotBlank
+    @Email
     @Column(name = "E_MAIL")
     private String email;
 
     @NotBlank
+    @Size(min = 5, message = "{validation.name.size.too_short}")
     @Column(name = "PASSWORD")
     private String password;
 
-    @ManyToMany(fetch = FetchType.EAGER, cascade = CascadeType.ALL)
+    @ManyToMany(fetch = FetchType.LAZY, cascade = CascadeType.ALL)
     @JoinTable(name = "FAV_RECIPES",
-            joinColumns = {@JoinColumn(name = "RECIPE_ID", referencedColumnName = "ID")},
-            inverseJoinColumns = {@JoinColumn(name = "USER_ID", referencedColumnName = "ID")}
+            joinColumns = {@JoinColumn(name = "USER_ID")},
+            inverseJoinColumns = {@JoinColumn(name = "RECIPE_ID")}
     )
     @JsonManagedReference
     private Set<Recipe> favRecipes = new HashSet<>();
