@@ -1,6 +1,6 @@
 package hu.nye.webapp.gasztrokucko.controller;
 
-import hu.nye.webapp.gasztrokucko.dto.RecipeDTO;
+import hu.nye.webapp.gasztrokucko.model.dto.RecipeDTO;
 import hu.nye.webapp.gasztrokucko.exception.InvalidRecipeRequestException;
 import hu.nye.webapp.gasztrokucko.service.RecipeService;
 import jakarta.validation.Valid;

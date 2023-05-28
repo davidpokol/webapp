@@ -39,6 +39,7 @@ public class Recipe {
 
     @NotBlank
     @Size(min = 5, message = "{validation.name.size.too_short}")
+    @Size(max = 60, message = "{validation.name.size.too_long}")
     @Column(name = "NAME", length = 60)
     private String name;
 
@@ -48,6 +49,7 @@ public class Recipe {
 
     @NotBlank
     @Size(min = 5, message = "{validation.name.size.too_short}")
+    @Size(max = 50, message = "{validation.name.size.too_long}")
     @Column(name = "LAST_MODIFIED", length = 50)
     private String lastModified;
 
@@ -69,7 +71,9 @@ public class Recipe {
     @ElementCollection
     @CollectionTable(name = "INGREDIENTS")
     @Column(name = "INGREDIENT", length = 30)
-    private List<@NotBlank String> ingredients;
+    private List<@NotBlank
+    @Size(max = 30, message = "{validation.name.size.too_long}")
+            String> ingredients;
 
     @Lob // learn more @ https://www.baeldung.com/hibernate-lob
     @NotBlank

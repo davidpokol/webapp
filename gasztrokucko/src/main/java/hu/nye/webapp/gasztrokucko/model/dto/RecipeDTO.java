@@ -1,4 +1,4 @@
-package hu.nye.webapp.gasztrokucko.dto;
+package hu.nye.webapp.gasztrokucko.model.dto;
 
 import hu.nye.webapp.gasztrokucko.model.entity.User;
 import hu.nye.webapp.gasztrokucko.model.enums.recipe.Category;
@@ -11,6 +11,7 @@ import lombok.NoArgsConstructor;
 import lombok.Setter;
 import org.apache.commons.lang3.builder.EqualsBuilder;
 import org.apache.commons.lang3.builder.HashCodeBuilder;
+import org.apache.commons.lang3.builder.ToStringBuilder;
 
 import java.util.*;
 
@@ -22,12 +23,15 @@ public class RecipeDTO {
     private Long id;
 
     @NotBlank
+    @Size(min = 5, message = "{validation.name.size.too_short}")
+    @Size(max = 60, message = "{validation.name.size.too_long}")
     private String name;
 
     private User createdBy;
 
     @NotBlank
     @Size(min = 5, message = "{validation.name.size.too_short}")
+    @Size(max = 50, message = "{validation.name.size.too_long}")
     private String lastModified;
 
     @NotBlank
@@ -39,11 +43,15 @@ public class RecipeDTO {
     @NotBlank
     private Difficulty difficulty;
 
-    private List<@NotBlank String> ingredients;
+    private List<@NotBlank
+    @Size(max = 30, message = "{validation.name.size.too_long}")
+            String> ingredients;
 
+    @NotBlank
     private String instructions;
 
     private byte[] photo;
+
     private Set<User> favoritedBy = new HashSet<>();
 
     private RecipeDTO(Builder builder) {
@@ -62,6 +70,67 @@ public class RecipeDTO {
 
     public static Builder builder() {
         return new Builder();
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) {
+            return true;
+        }
+
+        if (o == null || getClass() != o.getClass()) {
+            return false;
+        }
+
+        RecipeDTO recipeDTO = (RecipeDTO) o;
+
+        return new EqualsBuilder()
+                .append(id, recipeDTO.id)
+                .append(name, recipeDTO.name)
+                .append(createdBy, recipeDTO.createdBy)
+                .append(lastModified, recipeDTO.lastModified)
+                .append(recipeModificationType, recipeDTO.recipeModificationType)
+                .append(category, recipeDTO.category)
+                .append(difficulty, recipeDTO.difficulty)
+                .append(ingredients, recipeDTO.ingredients)
+                .append(instructions, recipeDTO.instructions)
+                .append(photo, recipeDTO.photo)
+                .append(favoritedBy, recipeDTO.favoritedBy)
+                .isEquals();
+    }
+
+    @Override
+    public int hashCode() {
+        return new HashCodeBuilder(17, 37)
+                .append(id)
+                .append(name)
+                .append(createdBy)
+                .append(lastModified)
+                .append(recipeModificationType)
+                .append(category)
+                .append(difficulty)
+                .append(ingredients)
+                .append(instructions)
+                .append(photo)
+                .append(favoritedBy)
+                .toHashCode();
+    }
+
+    @Override
+    public String toString() {
+        return new ToStringBuilder(this)
+                .append("id", id)
+                .append("name", name)
+                .append("createdBy", createdBy)
+                .append("lastModified", lastModified)
+                .append("recipeModificationType", recipeModificationType)
+                .append("category", category)
+                .append("difficulty", difficulty)
+                .append("ingredients", ingredients)
+                .append("instructions", instructions)
+                .append("photo", photo)
+                .append("favoritedBy", favoritedBy)
+                .toString();
     }
 
     @NoArgsConstructor
@@ -130,50 +199,6 @@ public class RecipeDTO {
 
         public RecipeDTO build() {
             return new RecipeDTO(this);
-        }
-
-        @Override
-        public boolean equals(Object o) {
-            if (this == o) {
-                return true;
-            }
-
-            if (o == null || getClass() != o.getClass()) {
-                return false;
-            }
-
-            RecipeDTO recipeDTO = (RecipeDTO) o;
-
-            return new EqualsBuilder()
-                    .append(id, recipeDTO.id)
-                    .append(name, recipeDTO.name)
-                    .append(createdBy, recipeDTO.createdBy)
-                    .append(lastModified, recipeDTO.lastModified)
-                    .append(recipeModificationType, recipeDTO.recipeModificationType)
-                    .append(category, recipeDTO.category)
-                    .append(difficulty, recipeDTO.difficulty)
-                    .append(ingredients, recipeDTO.ingredients)
-                    .append(instructions, recipeDTO.instructions)
-                    .append(photo, recipeDTO.photo)
-                    .append(favoritedBy, recipeDTO.favoritedBy)
-                    .isEquals();
-        }
-
-        @Override
-        public int hashCode() {
-            return new HashCodeBuilder(17, 37)
-                    .append(id)
-                    .append(name)
-                    .append(createdBy)
-                    .append(lastModified)
-                    .append(recipeModificationType)
-                    .append(category)
-                    .append(difficulty)
-                    .append(ingredients)
-                    .append(instructions)
-                    .append(photo)
-                    .append(favoritedBy)
-                    .toHashCode();
         }
     }
 }

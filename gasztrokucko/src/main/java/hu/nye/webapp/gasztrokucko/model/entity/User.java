@@ -33,6 +33,7 @@ public class User {
 
     @NotBlank
     @Size(min = 5, message = "{validation.name.size.too_short}")
+    @Size(max = 30, message = "{validation.name.size.too_long}")
     @Column(name = "USERNAME", length = 30)
     private String username;
 

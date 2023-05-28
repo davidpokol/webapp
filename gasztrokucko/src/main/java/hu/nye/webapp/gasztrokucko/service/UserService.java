@@ -1,6 +1,6 @@
 package hu.nye.webapp.gasztrokucko.service;
 
-import hu.nye.webapp.gasztrokucko.dto.UserDTO;
+import hu.nye.webapp.gasztrokucko.model.dto.UserDTO;
 
 import java.util.List;
 import java.util.Optional;

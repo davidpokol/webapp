@@ -1,6 +1,6 @@
 package hu.nye.webapp.gasztrokucko.service.impl;
 
-import hu.nye.webapp.gasztrokucko.dto.RecipeDTO;
+import hu.nye.webapp.gasztrokucko.model.dto.RecipeDTO;
 import hu.nye.webapp.gasztrokucko.repository.RecipeRepository;
 import hu.nye.webapp.gasztrokucko.service.RecipeService;
 import lombok.AllArgsConstructor;

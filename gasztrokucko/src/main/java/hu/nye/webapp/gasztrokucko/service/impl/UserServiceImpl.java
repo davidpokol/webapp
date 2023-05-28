@@ -1,6 +1,6 @@
 package hu.nye.webapp.gasztrokucko.service.impl;
 
-import hu.nye.webapp.gasztrokucko.dto.UserDTO;
+import hu.nye.webapp.gasztrokucko.model.dto.UserDTO;
 
 import hu.nye.webapp.gasztrokucko.repository.UserRepository;
 import hu.nye.webapp.gasztrokucko.service.UserService;

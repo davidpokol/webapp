@@ -1,12 +1,15 @@
-package hu.nye.webapp.gasztrokucko.dto;
+package hu.nye.webapp.gasztrokucko.model.dto;
 
 import hu.nye.webapp.gasztrokucko.model.entity.Recipe;
+import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.Size;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 import org.apache.commons.lang3.builder.EqualsBuilder;
 import org.apache.commons.lang3.builder.HashCodeBuilder;
+import org.apache.commons.lang3.builder.ToStringBuilder;
 
 import java.util.*;
 
@@ -18,12 +21,16 @@ public class UserDTO {
     private Long id;
 
     @NotBlank
+    @Size(min = 5, message = "{validation.name.size.too_short}")
+    @Size(max = 30, message = "{validation.name.size.too_long}")
     private String username;
 
     @NotBlank
+    @Email
     private String email;
 
     @NotBlank
+    @Size(min = 5, message = "{validation.name.size.too_short}")
     private String password;
 
     private Set<Recipe> favRecipes = new HashSet<>();
@@ -38,6 +45,49 @@ public class UserDTO {
 
     public static Builder builder() {
         return new Builder();
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) {
+            return true;
+        }
+
+        if (o == null || getClass() != o.getClass()) {
+            return false;
+        }
+
+        UserDTO userDTO = (UserDTO) o;
+
+        return new EqualsBuilder()
+                .append(id, userDTO.id)
+                .append(username, userDTO.username)
+                .append(email, userDTO.email)
+                .append(password, userDTO.password)
+                .append(favRecipes, userDTO.favRecipes)
+                .isEquals();
+    }
+
+    @Override
+    public int hashCode() {
+        return new HashCodeBuilder(17, 37)
+                .append(id)
+                .append(username)
+                .append(email)
+                .append(password)
+                .append(favRecipes)
+                .toHashCode();
+    }
+
+    @Override
+    public String toString() {
+        return new ToStringBuilder(this)
+                .append("id: ", id)
+                .append("username: ", username)
+                .append("email: ", email)
+                .append("password: ", password)
+                .append("favRecipes: ", favRecipes)
+                .toString();
     }
 
     @NoArgsConstructor
@@ -74,38 +124,6 @@ public class UserDTO {
         }
         public UserDTO build() {
             return new UserDTO(this);
-        }
-
-        @Override
-        public boolean equals(Object o) {
-            if (this == o) {
-                return true;
-            }
-
-            if (o == null || getClass() != o.getClass()) {
-                return false;
-            }
-
-            UserDTO userDTO = (UserDTO) o;
-
-            return new EqualsBuilder()
-                    .append(id, userDTO.id)
-                    .append(username, userDTO.username)
-                    .append(email, userDTO.email)
-                    .append(password, userDTO.password)
-                    .append(favRecipes, userDTO.favRecipes)
-                    .isEquals();
-        }
-
-        @Override
-        public int hashCode() {
-            return new HashCodeBuilder(17, 37)
-                    .append(id)
-                    .append(username)
-                    .append(email)
-                    .append(password)
-                    .append(favRecipes)
-                    .toHashCode();
         }
     }
 }

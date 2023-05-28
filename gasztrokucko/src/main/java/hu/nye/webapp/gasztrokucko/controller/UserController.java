@@ -1,7 +1,7 @@
 package hu.nye.webapp.gasztrokucko.controller;
 
-import hu.nye.webapp.gasztrokucko.dto.RecipeDTO;
-import hu.nye.webapp.gasztrokucko.dto.UserDTO;
+import hu.nye.webapp.gasztrokucko.model.dto.RecipeDTO;
+import hu.nye.webapp.gasztrokucko.model.dto.UserDTO;
 import hu.nye.webapp.gasztrokucko.exception.InvalidUserRequestException;
 import hu.nye.webapp.gasztrokucko.service.UserService;
 import jakarta.validation.Valid;
