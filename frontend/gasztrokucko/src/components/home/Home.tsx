@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useEffect, useState } from "react";
 import {
     Input,
     InputGroup,
@@ -12,6 +12,7 @@ import {
 import { SearchIcon } from "@chakra-ui/icons";
 import "./Home.css";
 import RecipeCards from "../recipes/RecipeCards";
+import axios from "axios";
 
 
 const recipes = [
@@ -37,7 +38,60 @@ const recipes = [
     },
 ];
 
+const recipes2 = [
+    {
+        name: "Chocolate Cake",
+        ingredients: "ingredients",
+        preparation: "prep",
+        image: "logo192.png"
+    },
+    {
+        name: "Chocolate Cake",
+        ingredients: "ingredients",
+        preparation: "prep",
+        image: "logo192.png"
+    },
+    {
+        name: "Chocolate Cake",
+        ingredients: "ingredients",
+        preparation: "prep",
+        image: "logo192.png"
+    },
+    {
+        name: "Chocolate Cake",
+        ingredients: "ingredients",
+        preparation: "prep",
+        image: "logo192.png"
+    },
+    {
+        name: "Chocolate Cake",
+        ingredients: "ingredients",
+        preparation: "prep",
+        image: "logo192.png"
+    }
+];
+
+var allRecipes;
+var breakfasts;
+var brunch;
+var elevenses;
+var lunches;
+var teas;
+var suppers;
+var dinners;
+
 const Home = () => {
+    useEffect(() => {
+        axios.get('http://localhost:5000/recipes')
+            .then(response => {
+                allRecipes = response.data
+                
+            })
+            .catch(error => {
+                console.error('Hiba történt a kérés során!\n', error);
+            })
+    },[])
+
     return (
         <VStack spacing={4}>
             <Box className="tillana-font">
@@ -61,7 +115,7 @@ const Home = () => {
                 </Flex>
             </Box>
             <Box p={5} className="tillana-font">
-                <div><RecipeCards recipes={recipes}></RecipeCards></div>
+                <div><RecipeCards recipes={recipes2}></RecipeCards></div>
             </Box>
         </VStack >
     )

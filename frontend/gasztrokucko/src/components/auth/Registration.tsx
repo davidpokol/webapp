@@ -1,21 +1,29 @@
 import React, { useState } from 'react';
+import axios from 'axios';
 import { Formik, Field } from 'formik'
 import { Box, Button, Checkbox, Flex, FormControl, FormErrorMessage, FormLabel, Input, VStack } from '@chakra-ui/react';
+import { AuthService } from './auth-service';
 
 const Registration = () => {
-    const [password,setPassowrd] = useState(""); 
+    const [password, setPassowrd] = useState("");
     return (
         <Flex bg="#F6E7C1" align="center" justify="center" h="100vh" color="#F4722B">
             <Box bg="#3E3E3E" p={6} rounded="md" w={420}>
                 <Formik
                     initialValues={{
-                        usermame: "",
+                        username: "",
                         email: "",
                         password: "",
                         passwordMatch: ""
                     }}
-                    onSubmit={(values) => {
+                    onSubmit={async (values, { resetForm }) => {
                         alert(JSON.stringify(values, null, 2));
+                        try {
+                            await AuthService.registration(values.username, values.email, values.password);
+                        } catch (e) {
+                            alert('HIBA!');
+                        }
+                        resetForm();
                     }}
                 >
                     {({ handleSubmit, errors, touched }) => (
@@ -52,7 +60,7 @@ const Registration = () => {
                                             if (value.length <= 5) {
                                                 return "A jelszónak hosszabnak kell lennie 5 karakternél!"
                                             }
-                                            else{
+                                            else {
                                                 setPassowrd(value);
                                             }
                                         }} />

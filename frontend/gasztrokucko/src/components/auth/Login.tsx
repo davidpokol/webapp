@@ -1,6 +1,8 @@
 import React from 'react';
 import { Formik, Field } from 'formik'
 import { Box, Button, Checkbox, Flex, FormControl, FormErrorMessage, FormLabel, Input, VStack } from '@chakra-ui/react';
+import { AuthService } from './auth-service';
+import { ToastContainer } from 'react-toastify';
 
 const Login = () => {
     return (
@@ -12,8 +14,14 @@ const Login = () => {
                         password: "",
                         rememberMe: false
                     }}
-                    onSubmit={(values) => {
+                    onSubmit={async (values) => {
                         alert(JSON.stringify(values, null, 2));
+                        try {
+                            await AuthService.login(values.email, values.password);
+                        } catch (e) {
+                            alert('HIBA!');
+                        }
+                        window.location.href = "/"
                     }}
                 >
                     {({ handleSubmit, errors, touched }) => (
@@ -58,6 +66,7 @@ const Login = () => {
                     )}
                 </Formik>
             </Box>
+            <ToastContainer position="top-center" />
         </Flex>
     )
 }
