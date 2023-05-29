@@ -47,6 +47,14 @@ public class UserDTO {
         return new Builder();
     }
 
+    public void addFavRecipe(Recipe favRecipe) {
+        favRecipes.add(favRecipe);
+    }
+
+    public void removeFavRecipe(Recipe favRecipe) {
+        favRecipes.remove(favRecipe);
+    }
+
     @Override
     public boolean equals(Object o) {
         if (this == o) {

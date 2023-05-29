@@ -1,18 +1,23 @@
 package hu.nye.webapp.gasztrokucko.service;
 
+import hu.nye.webapp.gasztrokucko.model.dto.RecipeDTO;
 import hu.nye.webapp.gasztrokucko.model.dto.UserDTO;
 
 import java.util.List;
 import java.util.Optional;
 
 public interface UserService {
-    List<UserDTO> findAll();
+    public List<UserDTO> findAll();
 
-    Optional<UserDTO> findById(Long id);
+    public Optional<UserDTO> findByUserName(String username);
 
-    UserDTO create(UserDTO userDTO);
+    public UserDTO create(UserDTO userDTO);
 
-    UserDTO update(UserDTO userDTO);
+    public List<RecipeDTO> findOwnRecipes(String username);
 
-    void delete(Long id);
+    public UserDTO favRecipe(String username, Long recipeId);
+
+    public UserDTO unfavRecipe(String username, Long recipeId);
+
+    public List<RecipeDTO> findFavRecipes(String username);
 }

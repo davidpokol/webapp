@@ -1,5 +1,6 @@
 package hu.nye.webapp.gasztrokucko.model.entity;
 
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonManagedReference;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.Email;
@@ -18,6 +19,7 @@ import java.util.Set;
 @Setter
 @NoArgsConstructor
 public class User {
+
 
     @Id
     @SequenceGenerator(
@@ -49,9 +51,10 @@ public class User {
 
     @ManyToMany(fetch = FetchType.LAZY, cascade = CascadeType.ALL)
     @JoinTable(name = "FAV_RECIPES",
-            joinColumns = {@JoinColumn(name = "USER_ID")},
-            inverseJoinColumns = {@JoinColumn(name = "RECIPE_ID")}
+            joinColumns = {@JoinColumn(name = "USER_ID", referencedColumnName = "ID")},
+            inverseJoinColumns = {@JoinColumn(name = "RECIPE_ID", referencedColumnName = "ID")}
     )
-    @JsonManagedReference
     private Set<Recipe> favRecipes = new HashSet<>();
+
 }
+

@@ -1,6 +1,9 @@
 package hu.nye.webapp.gasztrokucko.model.entity;
 
+import com.fasterxml.jackson.annotation.JsonBackReference;
 import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
+import com.fasterxml.jackson.annotation.JsonManagedReference;
 import hu.nye.webapp.gasztrokucko.model.enums.recipe.Category;
 import hu.nye.webapp.gasztrokucko.model.enums.recipe.Difficulty;
 import hu.nye.webapp.gasztrokucko.model.enums.recipe.ModificationType;
@@ -43,7 +46,7 @@ public class Recipe {
     @Column(name = "NAME", length = 60)
     private String name;
 
-    @ManyToOne(fetch = FetchType.LAZY)
+    @ManyToOne(fetch = FetchType.EAGER)
     @JoinColumn(name = "CREATED_BY", nullable = false)
     private User createdBy;
 
@@ -54,17 +57,14 @@ public class Recipe {
     private String lastModified;
 
     @Enumerated(EnumType.STRING)
-    @NotBlank
     @Column(name = "MODIFICATION_TYPE")
     private ModificationType recipeModificationType;
 
     @Enumerated(EnumType.STRING)
-    @NotBlank
     @Column(name = "CATEGORY")
     private Category category;
 
     @Enumerated(EnumType.STRING)
-    @NotBlank
     @Column(name = "DIFFICULTY")
     private Difficulty difficulty;
 
@@ -81,10 +81,9 @@ public class Recipe {
     private String instructions;
 
     @Lob
-    @Column(name = "IMAGE", columnDefinition = "BYTEA", nullable = false)
-    private byte[] photo;
+    @Column(name = "PHOTO", columnDefinition = "TEXT", nullable = false)
+    private String photo;
 
     @ManyToMany(mappedBy = "favRecipes", fetch = FetchType.LAZY, cascade = CascadeType.ALL)
-    @JsonIgnore
     private Set<User> favoritedBy = new HashSet<>();
 }

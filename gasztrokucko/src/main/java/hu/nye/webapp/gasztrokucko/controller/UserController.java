@@ -6,12 +6,14 @@ import hu.nye.webapp.gasztrokucko.exception.InvalidUserRequestException;
 import hu.nye.webapp.gasztrokucko.service.UserService;
 import jakarta.validation.Valid;
 import lombok.AllArgsConstructor;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.BindingResult;
 import org.springframework.validation.FieldError;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
+import java.util.Optional;
 import java.util.stream.Collectors;
 
 @RestController
@@ -19,31 +21,51 @@ import java.util.stream.Collectors;
 @RequestMapping("/users")
 public class UserController {
 
+
     private final UserService userService;
+    @GetMapping
+    public ResponseEntity<List<UserDTO>> findAll() {
+        List<UserDTO> users = userService.findAll();
+        return ResponseEntity.ok().body(users);
+    }
 
     @GetMapping("/{username}")
     public ResponseEntity<UserDTO> findByUsername(@PathVariable String username) {
-        return ResponseEntity.ok().body(null);
+
+        Optional<UserDTO> user = userService.findByUserName(username);
+
+        return user.map(ResponseEntity::ok)
+                .orElseGet(() -> ResponseEntity.notFound().build());
     }
 
-    @PostMapping("/add")
-    public ResponseEntity<UserDTO> create(@Valid @RequestBody UserDTO userDTO, BindingResult bindingResult) {
+    @PostMapping("/signUp")
+    public ResponseEntity<UserDTO> signUp(@Valid @RequestBody UserDTO userDTO, BindingResult bindingResult) {
         checkForRequestErrors(bindingResult);
+        UserDTO newUser = userService.create(userDTO);
+        return ResponseEntity.status(HttpStatus.CREATED).body(newUser);
+    }
 
-        return ResponseEntity.ok().body(null);
+    @GetMapping("/{username}/recipes")
+    public ResponseEntity<List<RecipeDTO>> findUserOwnRecipes(@PathVariable String username) {
+
+        List<RecipeDTO> ownRecipes = userService.findOwnRecipes(username);
+        return ResponseEntity.ok().body(ownRecipes);
     }
 
     @GetMapping("/{username}/fav-recipes")
-    public ResponseEntity<RecipeDTO> findFavRecipes(@PathVariable String username) {
+    public ResponseEntity<RecipeDTO> findFavRecipes(@PathVariable String username, @RequestBody Long recipeId) {
+
         return ResponseEntity.ok().body(null);
     }
 
-    @PostMapping("/{username}/fav-recipes/{id}")
-    public ResponseEntity<RecipeDTO> favorite(@PathVariable String username, @PathVariable Long id) {
-        return ResponseEntity.ok().body(null);
+    @PutMapping("/{username}/fav-recipes/{id}")
+    public ResponseEntity<UserDTO> favorite(@PathVariable String username, @PathVariable Long id) {
+
+        UserDTO userDTO = userService.favRecipe(username, id);
+        return ResponseEntity.ok().body(userDTO);
     }
 
-    @PostMapping("/{username}/fav-recipes/un-fav/{id}")
+    @PutMapping("/{username}/fav-recipes/un-fav/{id}")
     public ResponseEntity<RecipeDTO> unfavorite(@PathVariable String username, @PathVariable Long id) {
         return ResponseEntity.ok().body(null);
     }

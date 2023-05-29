@@ -1,6 +1,8 @@
 package hu.nye.webapp.gasztrokucko.controller;
 
 import hu.nye.webapp.gasztrokucko.exception.InvalidUserRequestException;
+import hu.nye.webapp.gasztrokucko.exception.RecipeNotFoundException;
+import hu.nye.webapp.gasztrokucko.exception.UserNotFoundException;
 import hu.nye.webapp.gasztrokucko.response.BadRequestError;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.ExceptionHandler;
@@ -17,5 +19,8 @@ public class UserControllerAdvice {
                 .body(badRequestError);
     }
 
-    // TODO: implement UserNotFoundException
+    @ExceptionHandler(value = UserNotFoundException.class)
+    public ResponseEntity<Void> userNotFoundHandler(UserNotFoundException userNotFoundException) {
+        return ResponseEntity.notFound().build();
+    }
 }

@@ -34,13 +34,10 @@ public class RecipeDTO {
     @Size(max = 50, message = "{validation.name.size.too_long}")
     private String lastModified;
 
-    @NotBlank
     private ModificationType recipeModificationType;
 
-    @NotBlank
     private Category category;
 
-    @NotBlank
     private Difficulty difficulty;
 
     private List<@NotBlank
@@ -50,7 +47,7 @@ public class RecipeDTO {
     @NotBlank
     private String instructions;
 
-    private byte[] photo;
+    private String photo;
 
     private Set<User> favoritedBy = new HashSet<>();
 
@@ -149,7 +146,7 @@ public class RecipeDTO {
         private List<String> ingredients;
 
         private String instructions;
-        private byte[] photo;
+        private String photo;
         private Set<User> favoritedBy = new HashSet<>();
 
         public Builder withId(Long id) {
@@ -188,7 +185,7 @@ public class RecipeDTO {
             this.instructions = instructions;
             return this;
         }
-        public Builder withPhoto(byte[] photo) {
+        public Builder withPhoto(String photo) {
             this.photo = photo;
             return this;
         }
