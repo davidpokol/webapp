@@ -21,8 +21,8 @@ public class UserDTO {
     private Long id;
 
     @NotBlank
-    @Size(min = 5, message = "{validation.name.size.too_short}")
-    @Size(max = 30, message = "{validation.name.size.too_long}")
+    @Size(min = 5, message = "validation.name.size.too_short")
+    @Size(max = 30, message = "validation.name.size.too_long")
     private String username;
 
     @NotBlank
@@ -30,7 +30,7 @@ public class UserDTO {
     private String email;
 
     @NotBlank
-    @Size(min = 5, message = "{validation.name.size.too_short}")
+    @Size(min = 5, message = "validation.name.size.too_short")
     private String password;
 
     private Set<Recipe> favRecipes = new HashSet<>();

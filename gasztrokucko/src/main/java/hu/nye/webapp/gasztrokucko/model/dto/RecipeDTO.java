@@ -9,6 +9,7 @@ import jakarta.validation.constraints.Size;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
+import lombok.ToString;
 import org.apache.commons.lang3.builder.EqualsBuilder;
 import org.apache.commons.lang3.builder.HashCodeBuilder;
 import org.apache.commons.lang3.builder.ToStringBuilder;
@@ -18,6 +19,7 @@ import java.util.*;
 @Getter
 @Setter
 @NoArgsConstructor
+@ToString
 public class RecipeDTO {
 
     private Long id;
@@ -27,7 +29,7 @@ public class RecipeDTO {
     @Size(max = 60, message = "{validation.name.size.too_long}")
     private String name;
 
-    private User createdBy;
+    private String createdBy;
 
     @NotBlank
     @Size(min = 5, message = "{validation.name.size.too_short}")
@@ -134,7 +136,7 @@ public class RecipeDTO {
     public static final class Builder {
         private Long id;
         private String name;
-        private User createdBy;
+        private String createdBy;
 
         private String lastModified;
 
@@ -157,7 +159,7 @@ public class RecipeDTO {
             this.name = name;
             return this;
         }
-        public Builder withCreatedBy(User createdBy) {
+        public Builder withCreatedBy(String createdBy) {
             this.createdBy = createdBy;
             return this;
         }

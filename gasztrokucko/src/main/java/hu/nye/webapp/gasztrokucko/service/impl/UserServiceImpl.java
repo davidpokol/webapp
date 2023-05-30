@@ -63,7 +63,11 @@ public class UserServiceImpl implements UserService {
 
         for (Recipe recipe: recipeRepository.findAll()) {
             if (recipe.getCreatedBy().getUsername().equals(username)) {
-                result.add(modelMapper.map(recipe,RecipeDTO.class));
+
+                recipe.setCreatedBy(null);
+                RecipeDTO map = modelMapper.map(recipe, RecipeDTO.class);
+                map.setCreatedBy(username);
+                result.add(map);
             }
         }
         return result;
