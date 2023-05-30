@@ -1,7 +1,5 @@
 package hu.nye.webapp.gasztrokucko.model.entity;
 
-import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
-import com.fasterxml.jackson.annotation.JsonManagedReference;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotBlank;
@@ -36,18 +34,18 @@ public class User {
     private Long id;
 
     @NotBlank
-    @Size(min = 5, message = "{validation.name.size.too_short}")
-    @Size(max = 30, message = "{validation.name.size.too_long}")
-    @Column(name = "USERNAME", length = 30)
+    @Size(min = 5, message = "length too short, min 5")
+    @Size(max = 30, message = "length too long, max 30")
+    @Column(name = "USERNAME", unique = true, length = 30)
     private String username;
 
     @NotBlank
     @Email
-    @Column(name = "E_MAIL")
+    @Column(name = "E_MAIL", unique = true)
     private String email;
 
     @NotBlank
-    @Size(min = 5, message = "{validation.name.size.too_short}")
+    @Size(min = 5, message = "length too short, min 5")
     @Column(name = "PASSWORD")
     private String password;
 

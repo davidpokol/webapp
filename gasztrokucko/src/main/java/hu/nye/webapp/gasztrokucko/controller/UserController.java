@@ -1,8 +1,8 @@
 package hu.nye.webapp.gasztrokucko.controller;
 
+import hu.nye.webapp.gasztrokucko.exception.InvalidUserRequestException;
 import hu.nye.webapp.gasztrokucko.model.dto.RecipeDTO;
 import hu.nye.webapp.gasztrokucko.model.dto.UserDTO;
-import hu.nye.webapp.gasztrokucko.exception.InvalidUserRequestException;
 import hu.nye.webapp.gasztrokucko.service.UserService;
 import jakarta.validation.Valid;
 import lombok.AllArgsConstructor;
@@ -41,12 +41,19 @@ public class UserController {
     @PostMapping("/signUp")
     public ResponseEntity<UserDTO> signUp(@Valid @RequestBody UserDTO userDTO, BindingResult bindingResult) {
         checkForRequestErrors(bindingResult);
-        UserDTO newUser = userService.create(userDTO);
+        UserDTO newUser;
+
+        newUser = userService.create(userDTO);
+
         return ResponseEntity.status(HttpStatus.CREATED).body(newUser);
     }
 
     @GetMapping("/{username}/recipes")
     public ResponseEntity<List<RecipeDTO>> findUserOwnRecipes(@PathVariable String username) {
+
+        if (userService.findByUserName(username).isEmpty()) {
+            return ResponseEntity.notFound().build();
+        }
 
         List<RecipeDTO> ownRecipes = userService.findOwnRecipes(username);
         return ResponseEntity.ok().body(ownRecipes);

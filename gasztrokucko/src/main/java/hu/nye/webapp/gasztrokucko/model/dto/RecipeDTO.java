@@ -19,21 +19,20 @@ import java.util.*;
 @Getter
 @Setter
 @NoArgsConstructor
-@ToString
 public class RecipeDTO {
 
     private Long id;
 
     @NotBlank
-    @Size(min = 5, message = "{validation.name.size.too_short}")
-    @Size(max = 60, message = "{validation.name.size.too_long}")
+    @Size(min = 5, message = "length too short, min 5")
+    @Size(max = 60, message = "length too long, max 60")
     private String name;
 
     private String createdBy;
 
     @NotBlank
-    @Size(min = 5, message = "{validation.name.size.too_short}")
-    @Size(max = 50, message = "{validation.name.size.too_long}")
+    @Size(min = 5, message = "length too short, min 5")
+    @Size(max = 50, message = "length too long, max 50")
     private String lastModified;
 
     private ModificationType recipeModificationType;
@@ -42,9 +41,7 @@ public class RecipeDTO {
 
     private Difficulty difficulty;
 
-    private List<@NotBlank
-    @Size(max = 30, message = "{validation.name.size.too_long}")
-            String> ingredients;
+    private List<@NotBlank @Size(max = 30, message = "length too long, max 30") String> ingredients;
 
     @NotBlank
     private String instructions;

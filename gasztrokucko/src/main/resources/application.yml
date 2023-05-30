@@ -16,3 +16,8 @@ spring:
     show-sql: true
   main:
     web-application-type: servlet
+
+jwt:
+  secret: ${JWT_SECRET}
+  issuer: recipes
+  tokenValidityInMinutes: 5

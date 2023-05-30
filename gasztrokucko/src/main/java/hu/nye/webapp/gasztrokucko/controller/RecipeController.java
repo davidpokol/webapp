@@ -1,13 +1,11 @@
 package hu.nye.webapp.gasztrokucko.controller;
 
-import hu.nye.webapp.gasztrokucko.model.dto.RecipeDTO;
 import hu.nye.webapp.gasztrokucko.exception.InvalidRecipeRequestException;
-import hu.nye.webapp.gasztrokucko.model.dto.UserDTO;
-import hu.nye.webapp.gasztrokucko.model.entity.Recipe;
+import hu.nye.webapp.gasztrokucko.model.dto.RecipeDTO;
 import hu.nye.webapp.gasztrokucko.service.RecipeService;
 import jakarta.validation.Valid;
 import lombok.AllArgsConstructor;
-import org.modelmapper.ModelMapper;
+import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.BindingResult;
@@ -51,6 +49,8 @@ public class RecipeController {
 
     @PutMapping("/update")
     public ResponseEntity<RecipeDTO> update(@Valid @RequestBody RecipeDTO recipeDTO, BindingResult bindingResult) {
+
+
         checkForRequestErrors(bindingResult);
 
         RecipeDTO updatedRecipe = recipeService.update(recipeDTO);

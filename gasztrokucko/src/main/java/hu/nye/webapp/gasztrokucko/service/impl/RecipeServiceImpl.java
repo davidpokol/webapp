@@ -14,7 +14,6 @@ import org.springframework.stereotype.Service;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
-import java.util.stream.Collectors;
 
 
 @Service
@@ -98,6 +97,15 @@ public class RecipeServiceImpl implements RecipeService {
         if(recipeToUpdate.isEmpty()) {
             throw new RecipeNotFoundException(
                     String.format("Recipe not found with id=%d", id)
+            );
+        }
+
+        Optional<RecipeDTO> byId = findById(recipeDTO.getId());
+        if (byId.isEmpty()) {
+            throw new RecipeNotFoundException();
+        } else if (!byId.get().getCreatedBy().equals(recipeDTO.getCreatedBy())) {
+            throw new RecipeNotFoundException(
+                    String.format("Recipe not found created by %s", recipeDTO.getCreatedBy())
             );
         }
         String createdBy = recipeDTO.getCreatedBy();
