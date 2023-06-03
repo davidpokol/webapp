@@ -1,10 +1,11 @@
 import React, { useState } from 'react';
 import axios from 'axios';
 import { Formik, Field } from 'formik'
-import { Box, Button, Checkbox, Flex, FormControl, FormErrorMessage, FormLabel, Input, VStack } from '@chakra-ui/react';
+import { Box, Button, Checkbox, Flex, FormControl, FormErrorMessage, FormLabel, Input, VStack, useToast } from '@chakra-ui/react';
 import { AuthService } from './auth-service';
 
 const Registration = () => {
+    const toast = useToast();
     const [password, setPassowrd] = useState("");
     return (
         <Flex bg="#F6E7C1" align="center" justify="center" h="100vh" color="#F4722B">
@@ -17,11 +18,28 @@ const Registration = () => {
                         passwordMatch: ""
                     }}
                     onSubmit={async (values, { resetForm }) => {
-                        alert(JSON.stringify(values, null, 2));
                         try {
-                            await AuthService.registration(values.username, values.email, values.password);
-                        } catch (e) {
-                            alert('HIBA!');
+                            await AuthService.registration(values.username, values.email, values.password, toast);
+                        } catch (e: any) {
+                            if (e.response.status === 409) {
+                                toast({
+                                    title: 'Regisztráció',
+                                    description: "A felhasználó már létezik!",
+                                    status: 'error',
+                                    position: 'top',
+                                    duration: 9000,
+                                    isClosable: true,
+                                });
+                            } else if (e.response.status !== 201) {
+                                toast({
+                                    title: 'Regisztráció',
+                                    description: "Valami hiba csúszott a gépezetbe!",
+                                    status: 'error',
+                                    position: 'top',
+                                    duration: 9000,
+                                    isClosable: true,
+                                });
+                            }
                         }
                         resetForm();
                     }}
@@ -29,14 +47,21 @@ const Registration = () => {
                     {({ handleSubmit, errors, touched }) => (
                         <form onSubmit={handleSubmit}>
                             <VStack spacing={4} align="flex-start">
-                                <FormControl>
+                                <FormControl
+                                    isInvalid={!!errors.username && touched.username}>
                                     <FormLabel htmlFor="username">Felhasználónév</FormLabel>
                                     <Field
                                         as={Input}
                                         id="username"
                                         name="username"
                                         type="text"
-                                        variant="filled" />
+                                        variant="filled"
+                                        validate={(value: string) => {
+                                            if (value.length < 5) {
+                                                return "A felhasználónévnek hosszabnak kell lennie 5 karakternél!"
+                                            }
+                                        }} />
+                                    <FormErrorMessage>{errors.username}</FormErrorMessage>
                                 </FormControl>
                                 <FormControl>
                                     <FormLabel htmlFor="email">Email</FormLabel>

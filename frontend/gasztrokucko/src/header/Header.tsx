@@ -5,19 +5,23 @@ import { Image, Flex, HStack, Select } from "@chakra-ui/react";
 import { Avatar, AvatarBadge, AvatarGroup, Menu, MenuItem, MenuList, MenuButton } from '@chakra-ui/react'
 import { ChevronDownIcon } from "@chakra-ui/icons";
 import "./Header.css"
+import { AuthService } from "../components/auth/auth-service";
 
 const Header = () => {
-    const [isLoggedIn, setIsLoggedIn] = useState(true);
+    const [isLoggedIn, setIsLoggedIn] = useState<Boolean>();
+    const [userToken, setUserToken] = useState<string | null>();
 
     useEffect(() => {
         document.title = "Gasztrokuckó";
+        setUserToken(AuthService.authToken);
       }, []);
 
     const handleLogout = () => {
-        setIsLoggedIn(false);
+        AuthService.logout();
+        window.location.href = "/";
     }
 
-    if (isLoggedIn) {
+    if (userToken) {
         return (
             <Box as="header" bg="#3E3E3E" color="#F4722B" className="tillana-font">
                 <Flex w="100%" px="5" py="3" align="center" justify="space-between">

@@ -1,47 +1,82 @@
-import React from 'react';
-import { Formik, Field } from 'formik'
-import { Box, Button, Checkbox, Flex, FormControl, FormErrorMessage, FormLabel, Input, VStack } from '@chakra-ui/react';
+import React, { useEffect, useState } from 'react';
+import { Formik, Field, useFormik } from 'formik'
+import { Box, Button, Checkbox, Flex, FormControl, FormErrorMessage, FormLabel, Input, VStack, useToast } from '@chakra-ui/react';
 import { AuthService } from './auth-service';
-import { ToastContainer } from 'react-toastify';
+import 'react-toastify/dist/ReactToastify.css';
+import { AxiosError } from 'axios';
 
 const Login = () => {
+    const toast = useToast();
+    const [username, setUsername] = useState('');
+    const [password, setPassowrd] = useState('');
+    const [rememberMe, setRememberMe] = useState(false);
+
+    useEffect(() => {
+        if (AuthService.userDetails) {
+            const data = AuthService.userDetails?.split(';');
+            setUsername(data[0]);
+            setPassowrd(data[1]);
+            setRememberMe(data[2] === "true");
+        }
+    }, []);
+
+    // TODO: Kijavítani a Formik input által kapott értékeit
+
     return (
         <Flex bg="#F6E7C1" align="center" justify="center" h="100vh" color="#F4722B">
             <Box bg="#3E3E3E" p={6} rounded="md" w={420}>
                 <Formik
                     initialValues={{
-                        email: "",
-                        password: "",
-                        rememberMe: false
+                        username: username,
+                        password: password,
+                        rememberMe: rememberMe
                     }}
                     onSubmit={async (values) => {
-                        alert(JSON.stringify(values, null, 2));
                         try {
-                            await AuthService.login(values.email, values.password);
-                        } catch (e) {
-                            alert('HIBA!');
+                            console.log(values.username + " | " + values.password + " | " + values.rememberMe);
+                            await AuthService.login(values.username, values.password, values.rememberMe);
+                            window.location.href = "/"
+                        } catch (e: any) {
+                            if (e.response.status === 401) {
+                                toast({
+                                    title: 'Regisztráció',
+                                    description: "Helytelen felhasználónév-jelszó páros!",
+                                    status: 'error',
+                                    position: 'top',
+                                    duration: 9000,
+                                    isClosable: true,
+                                });
+                            } else if (e.response.status !== 200) {
+                                toast({
+                                    title: 'Regisztráció',
+                                    description: "Hoppá! Valami nagy a baj! Próbáld meg újra!",
+                                    status: 'error',
+                                    position: 'top',
+                                    duration: 9000,
+                                    isClosable: true,
+                                });
+                            }
                         }
-                        window.location.href = "/"
                     }}
                 >
                     {({ handleSubmit, errors, touched }) => (
                         <form onSubmit={handleSubmit}>
                             <VStack spacing={4} align="flex-start">
                                 <FormControl
-                                    isInvalid={!!errors.email && touched.email}>
-                                    <FormLabel htmlFor="email">Email</FormLabel>
+                                    isInvalid={!!errors.username && touched.username}>
+                                    <FormLabel htmlFor="username">Felhasználónév</FormLabel>
                                     <Field
                                         as={Input}
-                                        id="email"
-                                        name="email"
-                                        type="email"
+                                        id="username"
+                                        name="username"
+                                        type="username"
                                         variant="filled"
                                         validate={(value: string) => {
                                             if (value.length == 0) {
-                                                return "A email mező nem lehet üres!"
+                                                return "A felhasználónév mező nem lehet üres!"
                                             }
                                         }} />
-                                    <FormErrorMessage>{errors.email}</FormErrorMessage>
+                                    <FormErrorMessage>{errors.username}</FormErrorMessage>
                                 </FormControl>
                                 <FormControl
                                     isInvalid={!!errors.password && touched.password}>
@@ -66,7 +101,6 @@ const Login = () => {
                     )}
                 </Formik>
             </Box>
-            <ToastContainer position="top-center" />
         </Flex>
     )
 }

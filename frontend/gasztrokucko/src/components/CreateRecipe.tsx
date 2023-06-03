@@ -8,11 +8,17 @@ import {
     FormControl,
     FormErrorMessage,
     FormLabel,
+    HStack,
     Input,
+    Radio,
+    RadioGroup,
+    Select,
     Textarea,
     VStack
 } from '@chakra-ui/react';
 import { useDropzone } from 'react-dropzone';
+import moment from 'moment';
+import 'moment/locale/hu';
 
 let img: File;
 
@@ -46,12 +52,12 @@ const DragAndDropImage = () => {
 
 const CreateRecipe = () => {
 
-    const [ingredients, setIngredients] = useState('');
-    const [ingredientsArray, setIngredientsArray] = useState<string[]>([]);
+    const [ingredientsList, setIngredients] = useState('');
+    const [ingredients, setIngredientsArray] = useState<string[]>([]);
 
     const handleIngredients = () => {
-        setIngredientsArray(ingredients.split(/[;\r\n]+/).map((item) => item.trim()));
-        console.log(ingredientsArray);
+        setIngredientsArray(ingredientsList.split(/[;\r\n]+/).map((item) => item.trim()));
+        console.log(ingredients);
     }
 
     return (
@@ -60,26 +66,39 @@ const CreateRecipe = () => {
                 <Formik
                     initialValues={{
                         name: "",
+                        createdBy: "",
+                        lastModified: "",
+                        recipeModificationType: "",
+                        category: "",
+                        difficulty: "",
                         ingredients: "",
-                        preparation: "",
-                        image: ""
+                        instructions: "",
+                        photo: ""
                     }}
-                    onSubmit={(values, { resetForm }) => {
+                    onSubmit={ async (values, { resetForm }) => {
                         const postData = {
                             name: values.name,
-                            ingredientsArray,
-                            preparation: values.preparation,
-                            image: img
+                            createdBy: "felhasználó",
+                            lastModified: moment().format('YYYY-MM-DD HH:mm:ss'),
+                            recipeModificationType: "CREATED",
+                            category: values.category,
+                            difficulty: values.difficulty,
+                            ingredients,
+                            instructions: values.instructions,
+                            photo: "logo192.png"
                         };
-                        resetForm();
+                        //resetForm();
                         alert(JSON.stringify(postData, null, 2));
-                        axios.post('http://localhost:5000/recipes/add', postData)
-                            .then(response => {
+                        const res = await axios.post(`/recipes/add`, postData)
+                            /*.then(response => {
 
                             })
                             .catch(error => {
                                 console.error('Hiba történt a kérés során!\n', error);
-                            })
+                            })*/
+                            if (res.status !== 201) {
+                                alert(res.status);
+                            }
                     }}
                 >
                     {({ handleSubmit, errors, touched }) => (
@@ -102,6 +121,42 @@ const CreateRecipe = () => {
                                     <FormErrorMessage>{errors.name}</FormErrorMessage>
                                 </FormControl>
                                 <FormControl
+                                    isInvalid={!!errors.category && touched.category}>
+                                    <FormLabel htmlFor="category">Kategória</FormLabel>
+                                    <Field
+                                        as={Select}
+                                        id="category"
+                                        name="category"
+                                        variant="filled"
+                                        validate={(value: string) => {
+                                            if (value === "") {
+                                                return "Válassz ki egy kategóriát!"
+                                            }
+                                        }}>
+                                        <option value="" disabled>Válassz</option>
+                                        <option value={"BREAKFAST"}>Reggeli</option>
+                                        <option value={"BRUNCH"}>Villásreggeli</option>
+                                        <option value={"ELEVENSES"}>Tízórai</option>
+                                        <option value={"LUNCH"}>Ebéd</option>
+                                        <option value={"TEA"}>Tea</option>
+                                        <option value={"SUPPER"}>Uzsonna</option>
+                                        <option value={"DINNER"}>Vacsora</option>
+                                    </Field>
+                                    <FormErrorMessage>{errors.category}</FormErrorMessage>
+                                </FormControl>
+                                <FormControl
+                                    isInvalid={!!errors.difficulty && touched.difficulty}>
+                                    <FormLabel htmlFor="difficulty">Kategória</FormLabel>
+                                    <RadioGroup name="difficulty">
+                                        <HStack spacing={4}>
+                                            <Field as={Radio} value="EASY">Könnyű</Field>
+                                            <Field as={Radio} value="MODERATE">Haladó</Field>
+                                            <Field as={Radio} value="HARD">Nehéz</Field>
+                                        </HStack>
+                                    </RadioGroup>
+                                    <FormErrorMessage>{errors.difficulty}</FormErrorMessage>
+                                </FormControl>
+                                <FormControl
                                     isInvalid={!!errors.ingredients && touched.ingredients}>
                                     <FormLabel htmlFor="ingredients">Hozzávalók</FormLabel>
                                     <Field
@@ -121,12 +176,12 @@ const CreateRecipe = () => {
                                     <FormErrorMessage>{errors.ingredients}</FormErrorMessage>
                                 </FormControl>
                                 <FormControl
-                                    isInvalid={!!errors.preparation && touched.preparation}>
-                                    <FormLabel htmlFor="preparation">Elkészítés</FormLabel>
+                                    isInvalid={!!errors.instructions && touched.instructions}>
+                                    <FormLabel htmlFor="instructions">Elkészítés</FormLabel>
                                     <Field
                                         as={Textarea}
-                                        id="preparation"
-                                        name="preparation"
+                                        id="instructions"
+                                        name="instructions"
                                         type="text"
                                         variant="filled"
                                         validate={(value: string) => {
