@@ -1,16 +1,21 @@
 package hu.nye.webapp.gasztrokucko.service.impl;
 
+import hu.nye.webapp.gasztrokucko.exception.FileParseException;
 import hu.nye.webapp.gasztrokucko.exception.RecipeNotFoundException;
 import hu.nye.webapp.gasztrokucko.model.dto.RecipeDTO;
+import hu.nye.webapp.gasztrokucko.model.entity.File;
 import hu.nye.webapp.gasztrokucko.model.entity.Recipe;
 import hu.nye.webapp.gasztrokucko.model.entity.User;
 import hu.nye.webapp.gasztrokucko.repository.RecipeRepository;
 import hu.nye.webapp.gasztrokucko.repository.UserRepository;
+import hu.nye.webapp.gasztrokucko.response.RecipeResponse;
 import hu.nye.webapp.gasztrokucko.service.RecipeService;
 import lombok.AllArgsConstructor;
 import org.modelmapper.ModelMapper;
 import org.springframework.stereotype.Service;
+import org.springframework.web.multipart.MultipartFile;
 
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
@@ -27,25 +32,24 @@ public class RecipeServiceImpl implements RecipeService {
     private final UserRepository userRepository;
 
     @Override
-    public List<RecipeDTO> findAll() {
+    public List<RecipeResponse> findAll() {
 
         List<Recipe> allRecipes = recipeRepository.findAll();
-        List<RecipeDTO> resultList = new ArrayList<>();
+        List<RecipeResponse> resultList = new ArrayList<>();
 
         for (Recipe recipe: allRecipes) {
 
             String createdBy = recipe.getCreatedBy().getUsername();
             recipe.setCreatedBy(null);
-            RecipeDTO map = modelMapper.map(recipe, RecipeDTO.class);
+            RecipeResponse map = modelMapper.map(recipe, RecipeResponse.class);
             map.setCreatedBy(createdBy);
             resultList.add(map);
         }
-
         return resultList;
     }
 
     @Override
-    public Optional<RecipeDTO> findById(Long id) {
+    public Optional<RecipeResponse> findById(Long id) {
 
         Optional<Recipe> foundRecipe = recipeRepository.findById(id);
 
@@ -53,7 +57,7 @@ public class RecipeServiceImpl implements RecipeService {
             Recipe unwrappedRecipe = foundRecipe.get();
             String createdBy = foundRecipe.get().getCreatedBy().getUsername();
             foundRecipe.get().setCreatedBy(null);
-            RecipeDTO resultRecipe = modelMapper.map(unwrappedRecipe, RecipeDTO.class);
+            RecipeResponse resultRecipe = modelMapper.map(unwrappedRecipe, RecipeResponse.class);
             resultRecipe.setCreatedBy(createdBy);
             return Optional.of(resultRecipe);
         }
@@ -65,7 +69,7 @@ public class RecipeServiceImpl implements RecipeService {
 
         String createdBy = recipeDTO.getCreatedBy();
         Optional<User> createdByObject = userRepository.findByUsername(createdBy);
-
+        File photo = convertMultiPartFileToFile(recipeDTO.getPhoto());
         Recipe recipeToSave = new Recipe(
                 null,
                 recipeDTO.getName(),
@@ -76,7 +80,7 @@ public class RecipeServiceImpl implements RecipeService {
                 recipeDTO.getDifficulty(),
                 recipeDTO.getIngredients(),
                 recipeDTO.getInstructions(),
-                recipeDTO.getPhoto(),
+                photo,
                 recipeDTO.getFavoritedBy()
                 );
 
@@ -89,7 +93,6 @@ public class RecipeServiceImpl implements RecipeService {
     @Override
     public RecipeDTO update(RecipeDTO recipeDTO) {
 
-
         Long id = recipeDTO.getId();
 
         Optional<Recipe> recipeToUpdate = recipeRepository.findById(id);
@@ -99,8 +102,8 @@ public class RecipeServiceImpl implements RecipeService {
                     String.format("Recipe not found with id=%d", id)
             );
         }
+        Optional<RecipeResponse> byId = findById(recipeDTO.getId());
 
-        Optional<RecipeDTO> byId = findById(recipeDTO.getId());
         if (byId.isEmpty()) {
             throw new RecipeNotFoundException();
         } else if (!byId.get().getCreatedBy().equals(recipeDTO.getCreatedBy())) {
@@ -110,9 +113,13 @@ public class RecipeServiceImpl implements RecipeService {
         }
         String createdBy = recipeDTO.getCreatedBy();
         Optional<User> createdByObject = userRepository.findByUsername(createdBy);
+        File photo = convertMultiPartFileToFile(recipeDTO.getPhoto());
         recipeDTO.setCreatedBy(null);
+        recipeDTO.setPhoto(null);
         Recipe recipeToPersist = modelMapper.map(recipeDTO, Recipe.class);
         recipeToPersist.setCreatedBy(createdByObject.get());
+        recipeToPersist.setPhoto(photo);
+
         Recipe savedRecipe = recipeRepository.save(recipeToPersist);
 
         RecipeDTO map = modelMapper.map(savedRecipe, RecipeDTO.class);
@@ -133,5 +140,22 @@ public class RecipeServiceImpl implements RecipeService {
             );
         }
     }
+
+    private File convertMultiPartFileToFile(MultipartFile multipartFile) {
+        File photo;
+        try {
+            photo = new File(null,
+                    multipartFile.getName(),
+                    multipartFile.getContentType(),
+                    multipartFile.getSize(),
+                    multipartFile.getBytes());
+        } catch (IOException e) {
+            throw new FileParseException("Failed to parse file");
+        }
+
+        return photo;
+    }
+
+
 
 }

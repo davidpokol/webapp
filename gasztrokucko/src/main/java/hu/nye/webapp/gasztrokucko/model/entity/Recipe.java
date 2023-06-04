@@ -73,8 +73,9 @@ public class Recipe {
     private String instructions;
 
     @Lob
-    @Column(name = "PHOTO", columnDefinition = "TEXT", nullable = false)
-    private String photo;
+    @ManyToOne(fetch = FetchType.EAGER)
+    @JoinColumn(name = "PHOTO", nullable = false)
+    private File photo;
 
     @ManyToMany(mappedBy = "favRecipes", fetch = FetchType.LAZY, cascade = CascadeType.ALL)
     private Set<User> favoritedBy = new HashSet<>();

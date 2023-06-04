@@ -2,6 +2,7 @@ package hu.nye.webapp.gasztrokucko.controller;
 
 import hu.nye.webapp.gasztrokucko.exception.InvalidRecipeRequestException;
 import hu.nye.webapp.gasztrokucko.model.dto.RecipeDTO;
+import hu.nye.webapp.gasztrokucko.response.RecipeResponse;
 import hu.nye.webapp.gasztrokucko.service.RecipeService;
 import jakarta.validation.Valid;
 import lombok.AllArgsConstructor;
@@ -24,15 +25,15 @@ public class RecipeController {
     private final RecipeService recipeService;
 
     @GetMapping
-    public ResponseEntity<List<RecipeDTO>> findAll() {
-        List<RecipeDTO> recipes = recipeService.findAll();
+    public ResponseEntity<List<RecipeResponse>> findAll() {
+        List<RecipeResponse> recipes = recipeService.findAll();
         return ResponseEntity.ok().body(recipes);
     }
 
     @GetMapping("/{id}")
-    public ResponseEntity<RecipeDTO> findById(@PathVariable Long id) {
+    public ResponseEntity<RecipeResponse> findById(@PathVariable Long id) {
 
-        Optional<RecipeDTO> recipe = recipeService.findById(id);
+        Optional<RecipeResponse> recipe = recipeService.findById(id);
 
         return recipe.map(ResponseEntity::ok)
                 .orElseGet(() -> ResponseEntity.notFound().build());

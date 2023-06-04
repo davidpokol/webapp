@@ -1,4 +1,4 @@
-package hu.nye.webapp.gasztrokucko.model.dto;
+package hu.nye.webapp.gasztrokucko.response;
 
 import hu.nye.webapp.gasztrokucko.model.entity.File;
 import hu.nye.webapp.gasztrokucko.model.entity.User;
@@ -10,19 +10,18 @@ import jakarta.validation.constraints.Size;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
-import lombok.ToString;
 import org.apache.commons.lang3.builder.EqualsBuilder;
 import org.apache.commons.lang3.builder.HashCodeBuilder;
 import org.apache.commons.lang3.builder.ToStringBuilder;
-import org.springframework.web.multipart.MultipartFile;
 
-import java.util.*;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Set;
 
 @Getter
 @Setter
 @NoArgsConstructor
-public class RecipeDTO {
-
+public class RecipeResponse {
     private Long id;
 
     @NotBlank
@@ -48,11 +47,11 @@ public class RecipeDTO {
     @NotBlank
     private String instructions;
 
-    private MultipartFile photo;
+    private File photo;
 
     private Set<User> favoritedBy = new HashSet<>();
 
-    private RecipeDTO(Builder builder) {
+    private RecipeResponse(Builder builder) {
         this.id = builder.id;
         this.name = builder.name;
         this.createdBy = builder.createdBy;
@@ -80,20 +79,20 @@ public class RecipeDTO {
             return false;
         }
 
-        RecipeDTO recipeDTO = (RecipeDTO) o;
+        RecipeResponse recipeResponse = (RecipeResponse) o;
 
         return new EqualsBuilder()
-                .append(id, recipeDTO.id)
-                .append(name, recipeDTO.name)
-                .append(createdBy, recipeDTO.createdBy)
-                .append(lastModified, recipeDTO.lastModified)
-                .append(recipeModificationType, recipeDTO.recipeModificationType)
-                .append(category, recipeDTO.category)
-                .append(difficulty, recipeDTO.difficulty)
-                .append(ingredients, recipeDTO.ingredients)
-                .append(instructions, recipeDTO.instructions)
-                .append(photo, recipeDTO.photo)
-                .append(favoritedBy, recipeDTO.favoritedBy)
+                .append(id, recipeResponse.id)
+                .append(name, recipeResponse.name)
+                .append(createdBy, recipeResponse.createdBy)
+                .append(lastModified, recipeResponse.lastModified)
+                .append(recipeModificationType, recipeResponse.recipeModificationType)
+                .append(category, recipeResponse.category)
+                .append(difficulty, recipeResponse.difficulty)
+                .append(ingredients, recipeResponse.ingredients)
+                .append(instructions, recipeResponse.instructions)
+                .append(photo, recipeResponse.photo)
+                .append(favoritedBy, recipeResponse.favoritedBy)
                 .isEquals();
     }
 
@@ -147,7 +146,7 @@ public class RecipeDTO {
         private List<String> ingredients;
 
         private String instructions;
-        private MultipartFile photo;
+        private File photo;
         private Set<User> favoritedBy = new HashSet<>();
 
         public Builder withId(Long id) {
@@ -186,7 +185,7 @@ public class RecipeDTO {
             this.instructions = instructions;
             return this;
         }
-        public Builder withPhoto(MultipartFile photo) {
+        public Builder withPhoto(File photo) {
             this.photo = photo;
             return this;
         }
@@ -195,8 +194,8 @@ public class RecipeDTO {
             return this;
         }
 
-        public RecipeDTO build() {
-            return new RecipeDTO(this);
+        public RecipeResponse build() {
+            return new RecipeResponse(this);
         }
     }
 }
