@@ -16,8 +16,6 @@ public class FileDTO {
 
     private String contentType;
 
-    private Long size;
-
     @Lob
     private byte[] data;
 

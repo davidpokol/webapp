@@ -1,5 +1,6 @@
 package hu.nye.webapp.gasztrokucko.controller;
 
+import hu.nye.webapp.gasztrokucko.exception.FileNotFoundException;
 import hu.nye.webapp.gasztrokucko.exception.InvalidRecipeRequestException;
 import hu.nye.webapp.gasztrokucko.exception.RecipeNotFoundException;
 import hu.nye.webapp.gasztrokucko.response.BadRequestError;
@@ -26,7 +27,12 @@ public class RecipeControllerAdvice {
         return ResponseEntity.notFound().build();
     }
 
-    @ExceptionHandler(value = NonTransientDataAccessException.class)
+    @ExceptionHandler(value = FileNotFoundException.class)
+    public ResponseEntity<Void> fileNotFoundHandler(FileNotFoundException fileNotFoundException) {
+        return ResponseEntity.notFound().build();
+    }
+
+    /*@ExceptionHandler(value = NonTransientDataAccessException.class)
     public ResponseEntity<BadRequestError> uniqueConstraintHandler () {
 
         BadRequestError badRequestError = new BadRequestError(
@@ -34,5 +40,5 @@ public class RecipeControllerAdvice {
         );
 
         return ResponseEntity.status(409).body(badRequestError);
-    }
+    }*/
 }

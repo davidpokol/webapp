@@ -47,10 +47,6 @@ public class RecipeResponse {
     @NotBlank
     private String instructions;
 
-    private File photo;
-
-    private Set<User> favoritedBy = new HashSet<>();
-
     private RecipeResponse(Builder builder) {
         this.id = builder.id;
         this.name = builder.name;
@@ -61,8 +57,6 @@ public class RecipeResponse {
         this.difficulty = builder.difficulty;
         this.ingredients = builder.ingredients;
         this.instructions = builder.instructions;
-        this.photo = builder.photo;
-        this.favoritedBy = builder.favoritedBy;
     }
 
     public static Builder builder() {
@@ -91,8 +85,6 @@ public class RecipeResponse {
                 .append(difficulty, recipeResponse.difficulty)
                 .append(ingredients, recipeResponse.ingredients)
                 .append(instructions, recipeResponse.instructions)
-                .append(photo, recipeResponse.photo)
-                .append(favoritedBy, recipeResponse.favoritedBy)
                 .isEquals();
     }
 
@@ -108,8 +100,6 @@ public class RecipeResponse {
                 .append(difficulty)
                 .append(ingredients)
                 .append(instructions)
-                .append(photo)
-                .append(favoritedBy)
                 .toHashCode();
     }
 
@@ -125,8 +115,6 @@ public class RecipeResponse {
                 .append("difficulty", difficulty)
                 .append("ingredients", ingredients)
                 .append("instructions", instructions)
-                .append("photo", photo)
-                .append("favoritedBy", favoritedBy)
                 .toString();
     }
 
@@ -146,8 +134,6 @@ public class RecipeResponse {
         private List<String> ingredients;
 
         private String instructions;
-        private File photo;
-        private Set<User> favoritedBy = new HashSet<>();
 
         public Builder withId(Long id) {
             this.id = id;
@@ -185,15 +171,6 @@ public class RecipeResponse {
             this.instructions = instructions;
             return this;
         }
-        public Builder withPhoto(File photo) {
-            this.photo = photo;
-            return this;
-        }
-        public Builder withFavoritedBy(Set<User> favoritedBy) {
-            this.favoritedBy = favoritedBy;
-            return this;
-        }
-
         public RecipeResponse build() {
             return new RecipeResponse(this);
         }

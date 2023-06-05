@@ -48,10 +48,6 @@ public class RecipeDTO {
     @NotBlank
     private String instructions;
 
-    private MultipartFile photo;
-
-    private Set<User> favoritedBy = new HashSet<>();
-
     private RecipeDTO(Builder builder) {
         this.id = builder.id;
         this.name = builder.name;
@@ -62,8 +58,6 @@ public class RecipeDTO {
         this.difficulty = builder.difficulty;
         this.ingredients = builder.ingredients;
         this.instructions = builder.instructions;
-        this.photo = builder.photo;
-        this.favoritedBy = builder.favoritedBy;
     }
 
     public static Builder builder() {
@@ -92,8 +86,6 @@ public class RecipeDTO {
                 .append(difficulty, recipeDTO.difficulty)
                 .append(ingredients, recipeDTO.ingredients)
                 .append(instructions, recipeDTO.instructions)
-                .append(photo, recipeDTO.photo)
-                .append(favoritedBy, recipeDTO.favoritedBy)
                 .isEquals();
     }
 
@@ -109,8 +101,6 @@ public class RecipeDTO {
                 .append(difficulty)
                 .append(ingredients)
                 .append(instructions)
-                .append(photo)
-                .append(favoritedBy)
                 .toHashCode();
     }
 
@@ -126,8 +116,6 @@ public class RecipeDTO {
                 .append("difficulty", difficulty)
                 .append("ingredients", ingredients)
                 .append("instructions", instructions)
-                .append("photo", photo)
-                .append("favoritedBy", favoritedBy)
                 .toString();
     }
 
@@ -147,8 +135,6 @@ public class RecipeDTO {
         private List<String> ingredients;
 
         private String instructions;
-        private MultipartFile photo;
-        private Set<User> favoritedBy = new HashSet<>();
 
         public Builder withId(Long id) {
             this.id = id;
@@ -184,14 +170,6 @@ public class RecipeDTO {
         }
         public Builder withInstructions(String instructions) {
             this.instructions = instructions;
-            return this;
-        }
-        public Builder withPhoto(MultipartFile photo) {
-            this.photo = photo;
-            return this;
-        }
-        public Builder withFavoritedBy(Set<User> favoritedBy) {
-            this.favoritedBy = favoritedBy;
             return this;
         }
 

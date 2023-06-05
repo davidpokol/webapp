@@ -69,7 +69,6 @@ public class RecipeServiceImpl implements RecipeService {
 
         String createdBy = recipeDTO.getCreatedBy();
         Optional<User> createdByObject = userRepository.findByUsername(createdBy);
-        File photo = convertMultiPartFileToFile(recipeDTO.getPhoto());
         Recipe recipeToSave = new Recipe(
                 null,
                 recipeDTO.getName(),
@@ -79,9 +78,7 @@ public class RecipeServiceImpl implements RecipeService {
                 recipeDTO.getCategory(),
                 recipeDTO.getDifficulty(),
                 recipeDTO.getIngredients(),
-                recipeDTO.getInstructions(),
-                photo,
-                recipeDTO.getFavoritedBy()
+                recipeDTO.getInstructions()
                 );
 
         Recipe savedRecipe = recipeRepository.save(recipeToSave);
@@ -113,12 +110,9 @@ public class RecipeServiceImpl implements RecipeService {
         }
         String createdBy = recipeDTO.getCreatedBy();
         Optional<User> createdByObject = userRepository.findByUsername(createdBy);
-        File photo = convertMultiPartFileToFile(recipeDTO.getPhoto());
         recipeDTO.setCreatedBy(null);
-        recipeDTO.setPhoto(null);
         Recipe recipeToPersist = modelMapper.map(recipeDTO, Recipe.class);
         recipeToPersist.setCreatedBy(createdByObject.get());
-        recipeToPersist.setPhoto(photo);
 
         Recipe savedRecipe = recipeRepository.save(recipeToPersist);
 
@@ -140,22 +134,4 @@ public class RecipeServiceImpl implements RecipeService {
             );
         }
     }
-
-    private File convertMultiPartFileToFile(MultipartFile multipartFile) {
-        File photo;
-        try {
-            photo = new File(null,
-                    multipartFile.getName(),
-                    multipartFile.getContentType(),
-                    multipartFile.getSize(),
-                    multipartFile.getBytes());
-        } catch (IOException e) {
-            throw new FileParseException("Failed to parse file");
-        }
-
-        return photo;
-    }
-
-
-
 }

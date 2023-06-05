@@ -8,9 +8,7 @@ import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.Size;
 import lombok.*;
 
-import java.util.HashSet;
 import java.util.List;
-import java.util.Set;
 
 @Entity
 @Table(name = "RECIPES")
@@ -71,12 +69,4 @@ public class Recipe {
     @NotBlank
     @Column(name = "INSTRUCTIONS", columnDefinition = "TEXT")
     private String instructions;
-
-    @Lob
-    @ManyToOne(fetch = FetchType.EAGER)
-    @JoinColumn(name = "PHOTO", nullable = false)
-    private File photo;
-
-    @ManyToMany(mappedBy = "favRecipes", fetch = FetchType.LAZY, cascade = CascadeType.ALL)
-    private Set<User> favoritedBy = new HashSet<>();
 }
