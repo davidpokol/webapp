@@ -1,7 +1,6 @@
 package hu.nye.webapp.gasztrokucko.service.impl;
 
 import hu.nye.webapp.gasztrokucko.model.dto.FileDTO;
-import hu.nye.webapp.gasztrokucko.model.dto.UserDTO;
 import hu.nye.webapp.gasztrokucko.model.entity.File;
 import hu.nye.webapp.gasztrokucko.repository.FileRepository;
 import hu.nye.webapp.gasztrokucko.service.FileService;
@@ -12,9 +11,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
-import java.io.FileNotFoundException;
 import java.io.IOException;
-import java.util.Objects;
 import java.util.Optional;
 
 @Service
@@ -34,9 +31,9 @@ public class FileServiceImpl implements FileService {
 
     @Override
     @Transactional
-    public String uploadFile(Long recipeId, MultipartFile file) throws IOException {
+    public String uploadFile(Long id, MultipartFile file) throws IOException {
         File fileData = fileRepository.save(File.builder()
-                .id(recipeId)
+                .id(id)
                 .name(file.getOriginalFilename())
                 .contentType(file.getContentType())
                 .data(fileUtil.compressFile(file.getBytes())).build());

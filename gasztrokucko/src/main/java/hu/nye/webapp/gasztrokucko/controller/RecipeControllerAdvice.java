@@ -1,15 +1,14 @@
 package hu.nye.webapp.gasztrokucko.controller;
 
+import com.auth0.jwt.exceptions.JWTVerificationException;
+import hu.nye.webapp.gasztrokucko.exception.AuthorizationException;
 import hu.nye.webapp.gasztrokucko.exception.FileNotFoundException;
 import hu.nye.webapp.gasztrokucko.exception.InvalidRecipeRequestException;
 import hu.nye.webapp.gasztrokucko.exception.RecipeNotFoundException;
 import hu.nye.webapp.gasztrokucko.response.BadRequestError;
-import org.springframework.dao.NonTransientDataAccessException;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
-
-import java.util.List;
 
 @RestControllerAdvice(assignableTypes = RecipeController.class)
 public class RecipeControllerAdvice {
@@ -32,13 +31,13 @@ public class RecipeControllerAdvice {
         return ResponseEntity.notFound().build();
     }
 
-    /*@ExceptionHandler(value = NonTransientDataAccessException.class)
-    public ResponseEntity<BadRequestError> uniqueConstraintHandler () {
+    @ExceptionHandler(value = AuthorizationException.class)
+    public ResponseEntity<Void> authorizationHandler(AuthorizationException authorizationException) {
+        return ResponseEntity.status(403).build();
+    }
 
-        BadRequestError badRequestError = new BadRequestError(
-                List.of("recipe name is already taken.")
-        );
-
-        return ResponseEntity.status(409).body(badRequestError);
-    }*/
+    @ExceptionHandler(value = JWTVerificationException.class)
+    public ResponseEntity<Void> jwtVerificationHandler(JWTVerificationException jwtVerificationException) {
+        return ResponseEntity.status(401).build();
+    }
 }

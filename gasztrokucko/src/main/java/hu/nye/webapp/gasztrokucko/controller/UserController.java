@@ -1,11 +1,15 @@
 package hu.nye.webapp.gasztrokucko.controller;
 
+import com.auth0.jwt.exceptions.JWTVerificationException;
+import hu.nye.webapp.gasztrokucko.exception.AuthorizationException;
 import hu.nye.webapp.gasztrokucko.exception.InvalidUserRequestException;
 import hu.nye.webapp.gasztrokucko.model.dto.RecipeDTO;
 import hu.nye.webapp.gasztrokucko.model.dto.UserDTO;
+import hu.nye.webapp.gasztrokucko.service.AuthorizationService;
 import hu.nye.webapp.gasztrokucko.service.UserService;
 import jakarta.validation.Valid;
 import lombok.AllArgsConstructor;
+import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.BindingResult;
@@ -23,6 +27,8 @@ public class UserController {
 
 
     private final UserService userService;
+    private final AuthorizationService authorizationService;
+
     @GetMapping
     public ResponseEntity<List<UserDTO>> findAll() {
         List<UserDTO> users = userService.findAll();
@@ -30,9 +36,14 @@ public class UserController {
     }
 
     @GetMapping("/{username}")
-    public ResponseEntity<UserDTO> findByUsername(@PathVariable String username) {
+    public ResponseEntity<UserDTO> findByUsername(@RequestHeader(HttpHeaders.AUTHORIZATION) String token,
+                                                  @PathVariable String username) throws JWTVerificationException {
 
         Optional<UserDTO> user = userService.findByUserName(username);
+
+        if (user.isPresent() && !authorizationService.validateTokenWithUsername(token, username)) {
+            throw new AuthorizationException("Access denied!");
+        }
 
         return user.map(ResponseEntity::ok)
                 .orElseGet(() -> ResponseEntity.notFound().build());
@@ -49,10 +60,16 @@ public class UserController {
     }
 
     @GetMapping("/{username}/recipes")
-    public ResponseEntity<List<RecipeDTO>> findUserOwnRecipes(@PathVariable String username) {
+    public ResponseEntity<List<RecipeDTO>> findUserOwnRecipes(@RequestHeader(HttpHeaders.AUTHORIZATION) String token,
+                                                              @PathVariable String username)
+            throws JWTVerificationException {
 
         if (userService.findByUserName(username).isEmpty()) {
             return ResponseEntity.notFound().build();
+        }
+
+        if (!authorizationService.validateTokenWithUsername(token, username)) {
+            throw new AuthorizationException("Access denied!");
         }
 
         List<RecipeDTO> ownRecipes = userService.findOwnRecipes(username);

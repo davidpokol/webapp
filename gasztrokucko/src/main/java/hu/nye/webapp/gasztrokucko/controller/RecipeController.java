@@ -1,15 +1,19 @@
 package hu.nye.webapp.gasztrokucko.controller;
 
+import com.auth0.jwt.exceptions.JWTVerificationException;
+import hu.nye.webapp.gasztrokucko.exception.AuthorizationException;
 import hu.nye.webapp.gasztrokucko.exception.FileNotFoundException;
 import hu.nye.webapp.gasztrokucko.exception.InvalidRecipeRequestException;
 import hu.nye.webapp.gasztrokucko.exception.RecipeNotFoundException;
 import hu.nye.webapp.gasztrokucko.model.dto.FileDTO;
 import hu.nye.webapp.gasztrokucko.model.dto.RecipeDTO;
+import hu.nye.webapp.gasztrokucko.service.AuthorizationService;
 import hu.nye.webapp.gasztrokucko.service.FileService;
 import hu.nye.webapp.gasztrokucko.service.RecipeService;
 import hu.nye.webapp.gasztrokucko.util.FileUtil;
 import jakarta.validation.Valid;
 import lombok.AllArgsConstructor;
+import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
@@ -30,6 +34,8 @@ public class RecipeController {
 
     private final RecipeService recipeService;
     private final FileService fileService;
+
+    private final AuthorizationService authorizationService;
     private final FileUtil fileUtil;
 
     @GetMapping
@@ -48,8 +54,14 @@ public class RecipeController {
     }
 
     @PostMapping("/add")
-    public ResponseEntity<RecipeDTO> create(@Valid @RequestBody RecipeDTO recipeDTO, BindingResult bindingResult) {
+    public ResponseEntity<RecipeDTO> create(@RequestHeader(HttpHeaders.AUTHORIZATION) String token,
+                                            @Valid @RequestBody RecipeDTO recipeDTO,
+                                            BindingResult bindingResult) throws JWTVerificationException {
         checkForRequestErrors(bindingResult);
+
+        if (!authorizationService.validateToken(token)) {
+            throw new AuthorizationException("Access denied!");
+        }
 
         RecipeDTO savedRecipe = recipeService.create(recipeDTO);
         return ResponseEntity.status(HttpStatus.CREATED)
@@ -57,10 +69,15 @@ public class RecipeController {
     }
 
     @PutMapping("/update")
-    public ResponseEntity<RecipeDTO> update(@Valid @RequestBody RecipeDTO recipeDTO, BindingResult bindingResult) {
-
-
+    public ResponseEntity<RecipeDTO> update(@RequestHeader(HttpHeaders.AUTHORIZATION) String token,
+                                            @Valid @RequestBody RecipeDTO recipeDTO,
+                                            BindingResult bindingResult)
+            throws AuthorizationException, JWTVerificationException {
         checkForRequestErrors(bindingResult);
+
+        if (!authorizationService.validateTokenWithUsername(token, recipeDTO.getCreatedBy())) {
+            throw new AuthorizationException("Access denied!");
+        }
 
         RecipeDTO updatedRecipe = recipeService.update(recipeDTO);
 
@@ -68,20 +85,43 @@ public class RecipeController {
     }
 
     @DeleteMapping("/{id}")
-    public ResponseEntity<Void> delete(@PathVariable Long id) {
+    public ResponseEntity<Void> delete(@RequestHeader(HttpHeaders.AUTHORIZATION) String token,
+                                       @PathVariable Long id) throws JWTVerificationException {
+        Optional<RecipeDTO> recipe = recipeService.findById(id);
+
+        if (recipe.isEmpty()) {
+            throw new RecipeNotFoundException();
+        }
+        String createdBy = recipe.get().getCreatedBy();
+
+        if (!authorizationService.validateTokenWithUsername(token, createdBy)) {
+            throw new AuthorizationException("Access denied!");
+        }
         recipeService.delete(id);
 
         return ResponseEntity.noContent().build();
     }
 
     @PostMapping("/{id}/image")
-    public ResponseEntity<?> uploadFile(@PathVariable("id") Long photoId, @RequestParam("photo")MultipartFile file) throws IOException {
-        if (recipeService.findById(photoId).isEmpty()) {
-            throw new RecipeNotFoundException(String.format(
-                    "Recipe not found with ID: %s", photoId
-            ));
+    public ResponseEntity<?> uploadFile(@RequestHeader(HttpHeaders.AUTHORIZATION) String token,
+                                        @PathVariable Long id,
+                                        @RequestParam("photo")MultipartFile file)
+            throws IOException, JWTVerificationException {
+
+        /*
+        Optional<RecipeDTO> recipe = recipeService.findById(id);
+
+        if (recipe.isEmpty()) {
+            throw new RecipeNotFoundException();
         }
-        String uploadFile = fileService.uploadFile(photoId, file);
+        String createdBy = recipe.get().getCreatedBy();
+
+        if (!authorizationService.validateToken(token, createdBy)) {
+            throw new AuthorizationException("Access denied!");
+        }
+        */
+
+        String uploadFile = fileService.uploadFile(id, file);
         return ResponseEntity.status(HttpStatus.CREATED)
                 .body(uploadFile);
     }

@@ -1,6 +1,5 @@
 package hu.nye.webapp.gasztrokucko.service;
 
-import hu.nye.webapp.gasztrokucko.exception.FileNotFoundException;
 import hu.nye.webapp.gasztrokucko.model.dto.FileDTO;
 import org.springframework.web.multipart.MultipartFile;
 

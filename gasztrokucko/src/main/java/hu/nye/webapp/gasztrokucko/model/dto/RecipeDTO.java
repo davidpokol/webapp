@@ -1,7 +1,5 @@
 package hu.nye.webapp.gasztrokucko.model.dto;
 
-import hu.nye.webapp.gasztrokucko.model.entity.File;
-import hu.nye.webapp.gasztrokucko.model.entity.User;
 import hu.nye.webapp.gasztrokucko.model.enums.recipe.Category;
 import hu.nye.webapp.gasztrokucko.model.enums.recipe.Difficulty;
 import hu.nye.webapp.gasztrokucko.model.enums.recipe.ModificationType;
@@ -10,11 +8,9 @@ import jakarta.validation.constraints.Size;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
-import lombok.ToString;
 import org.apache.commons.lang3.builder.EqualsBuilder;
 import org.apache.commons.lang3.builder.HashCodeBuilder;
 import org.apache.commons.lang3.builder.ToStringBuilder;
-import org.springframework.web.multipart.MultipartFile;
 
 import java.util.*;
 
