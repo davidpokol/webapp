@@ -21,7 +21,11 @@ const ProfilePage = () => {
 
     useEffect(() => {
         axios
-            .get(`/users/${AuthService.userName}/recipes`)
+            .get(`/users/${AuthService.userName}/recipes`, {
+                headers: {
+                    Authorization : `${AuthService.authToken}`
+                    }
+            })
             .then(response => {
                 setAllRecipes(response.data);
             })

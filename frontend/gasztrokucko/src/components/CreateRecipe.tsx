@@ -21,6 +21,9 @@ import { useDropzone } from 'react-dropzone';
 import moment from 'moment';
 import 'moment/locale/hu';
 import { AuthService } from './auth/auth-service';
+import { Recipe } from './recipes/RecipeCards';
+import { useParams } from 'react-router-dom';
+import { error } from 'console';
 
 let img: File;
 
@@ -61,11 +64,36 @@ const CreateRecipe = () => {
             const name = AuthService.userName;
             setUsername(name);
         }
-    },[]) 
+    }, [])
 
     const [ingredientsList, setIngredients] = useState('');
     const [ingredients, setIngredientsArray] = useState<string[]>([]);
     const [imageId, setImageId] = useState();
+
+    const { id } = useParams();
+
+    const [recipe, setRecipe] = useState<Recipe>();
+    const [isUpdate, setIsUpdate] = useState(false);
+    const [difficulty, setDifficulty] = useState<string>();
+
+    useEffect(() => {
+        if (id) {
+            axios.get(`/recipes/${id}`, {
+                headers: {
+                    Authorization: `${AuthService.authToken}`
+                }
+            })
+                .then(res => {
+                    setRecipe(res.data);
+                    setDifficulty(res.data.difficulty);
+                    setIsUpdate(true);
+                })
+                .catch(error => {
+                    console.log("Recept módosítása");
+                })
+        }
+    }, [id])
+
 
     const handleIngredients = () => {
         setIngredientsArray(ingredientsList.split(/[;\r\n]+/).map((item) => item.trim()));
@@ -77,15 +105,16 @@ const CreateRecipe = () => {
         <Flex bg="#F6E7C1" align="center" justify="center" h="100vh" color="#F4722B">
             <Box bg="#3E3E3E" p={6} rounded="md" w={420}>
                 <Formik
+                    enableReinitialize
                     initialValues={{
-                        name: "",
-                        createdBy: "",
-                        lastModified: "",
-                        recipeModificationType: "",
-                        category: "",
+                        name: recipe !== undefined ? recipe.name : "",
+                        createdBy: recipe !== undefined ? recipe.createdBy : "",
+                        lastModified: recipe !== undefined ? recipe.lastModified : "",
+                        recipeModificationType: recipe !== undefined ? "MODIFIED" : "CREATED",
+                        category: recipe !== undefined ? recipe.category : "",
                         difficulty: "",
-                        ingredients: "",
-                        instructions: "",
+                        ingredients: recipe !== undefined ? recipe.ingredients : "",
+                        instructions: recipe !== undefined ? recipe.instructions : "",
                         photo: ""
                     }}
                     onSubmit={async (values, { resetForm }) => {
@@ -93,53 +122,93 @@ const CreateRecipe = () => {
                             name: values.name,
                             createdBy: username,
                             lastModified: moment().format('YYYY-MM-DD HH:mm:ss'),
-                            recipeModificationType: "CREATED",
+                            recipeModificationType: recipe !== undefined ? "MODIFIED" : "CREATED",
                             category: values.category,
                             difficulty: values.difficulty,
                             ingredients,
                             instructions: values.instructions
                         };
-                        //resetForm();
-                        alert(JSON.stringify(postData, null, 2));
-                        const res = await axios.post(`/recipes/add`, postData)
-                            .then(response => {
-                                const imageUpload = async () => {
-                                    const imageData = new FormData();
-                                    imageData.append("photo", img);
-                                    await axios.post(`/recipes/${response.data.id}/image`, imageData)
-                                        .then(response => {
-                                            toast({
-                                                title: 'Recept hozzáadása',
-                                                description: "Sikeres recept hozzáadás!",
-                                                status: 'success',
-                                                position: 'top',
-                                                duration: 9000,
-                                                isClosable: true,
-                                            });
-                                        })
-                                        .catch(error => {
-                                            toast({
-                                                title: 'Recept hozzáadása',
-                                                description: "Sikertelen recept hozzáadás!",
-                                                status: 'error',
-                                                position: 'top',
-                                                duration: 9000,
-                                                isClosable: true,
-                                            });
-                                        })
+                        if (!isUpdate) {
+                            const res = await axios.post(`/recipes/add`, postData, {
+                                headers: {
+                                    Authorization: `${AuthService.authToken}`
                                 }
-                                imageUpload();
+                            })
+                                .then(response => {
+                                    const imageUpload = async () => {
+                                        const imageData = new FormData();
+                                        imageData.append("photo", img);
+                                        await axios.post(`/recipes/${response.data.id}/image`, imageData, {
+                                            headers: {
+                                                Authorization: `${AuthService.authToken}`
+                                            }
+                                        })
+                                            .then(response => {
+                                                resetForm();
+                                                toast({
+                                                    title: 'Recept hozzáadása',
+                                                    description: "Sikeres recept hozzáadás!",
+                                                    status: 'success',
+                                                    position: 'top',
+                                                    duration: 9000,
+                                                    isClosable: true,
+                                                });
+                                            })
+                                            .catch(error => {
+                                                toast({
+                                                    title: 'Recept hozzáadása',
+                                                    description: "Sikertelen recept hozzáadás!",
+                                                    status: 'error',
+                                                    position: 'top',
+                                                    duration: 9000,
+                                                    isClosable: true,
+                                                });
+                                            })
+                                    }
+                                    imageUpload();
+                                })
+                                .catch(error => {
+                                    toast({
+                                        title: 'Recept hozzáadása',
+                                        description: "Hiba történt a kérés során!",
+                                        status: 'error',
+                                        position: 'top',
+                                        duration: 9000,
+                                        isClosable: true,
+                                    });
+                                })
+                        } else {
+                            const id = recipe !== undefined ? recipe.id : null;
+                            const updatedPostData = {
+                                ...postData,
+                                id: id
+                            };
+                            axios.put(`/recipes/update`, updatedPostData, {
+                                headers: {
+                                    Authorization: `${AuthService.authToken}`
+                                }
+                            })
+                            .then(res => {
+                                toast({
+                                    title: 'Recept frissítése',
+                                    description: "Sikeres frissítés!",
+                                    status: 'success',
+                                    position: 'top',
+                                    duration: 9000,
+                                    isClosable: true,
+                                });
                             })
                             .catch(error => {
                                 toast({
-                                    title: 'Recept hozzáadása',
-                                    description: "Hiba történt a kérés során!",
+                                    title: 'Recept frissítése',
+                                    description: "Sikertelen frissítés!",
                                     status: 'error',
                                     position: 'top',
                                     duration: 9000,
                                     isClosable: true,
                                 });
                             })
+                        }
                     }}
                 >
                     {({ handleSubmit, errors, touched }) => (
@@ -157,6 +226,9 @@ const CreateRecipe = () => {
                                         validate={(value: string) => {
                                             if (value.length == 0) {
                                                 return "Az elnevezés mező nem lehet üres!"
+                                            }
+                                            else if (value.length < 5) {
+                                                return "Nem lehet rövidebb 5 karakternél!"
                                             }
                                         }} />
                                     <FormErrorMessage>{errors.name}</FormErrorMessage>
@@ -188,7 +260,7 @@ const CreateRecipe = () => {
                                 <FormControl
                                     isInvalid={!!errors.difficulty && touched.difficulty}>
                                     <FormLabel htmlFor="difficulty">Nehézség</FormLabel>
-                                    <RadioGroup name="difficulty">
+                                    <RadioGroup name="difficulty" defaultValue={difficulty}>
                                         <HStack spacing={4}>
                                             <Field as={Radio} value="EASY">Könnyű</Field>
                                             <Field as={Radio} value="MODERATE">Haladó</Field>

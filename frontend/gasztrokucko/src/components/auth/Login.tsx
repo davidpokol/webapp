@@ -1,30 +1,28 @@
 import React, { useEffect, useState } from 'react';
-import { Formik, Field, useFormik } from 'formik'
+import { Formik, Field } from 'formik'
 import { Box, Button, Checkbox, Flex, FormControl, FormErrorMessage, FormLabel, Input, VStack, useToast } from '@chakra-ui/react';
 import { AuthService } from './auth-service';
-import { AxiosError } from 'axios';
 
 const Login = () => {
     const toast = useToast();
     const [username, setUsername] = useState('');
     const [password, setPassowrd] = useState('');
-    const [rememberMe, setRememberMe] = useState(false);
+    const [rememberMe, setRememberMe] = useState<boolean>(false);
 
     useEffect(() => {
         if (AuthService.userDetails) {
             const data = AuthService.userDetails?.split(';');
             setUsername(data[0]);
             setPassowrd(data[1]);
-            setRememberMe(data[2] === "true");
+            setRememberMe((data[2] === "true"));
         }
-    }, []);
-
-    // TODO: Kijavítani a Formik input által kapott értékeit
+    }, [AuthService.userDetails, setRememberMe]);
 
     return (
         <Flex bg="#F6E7C1" align="center" justify="center" h="100vh" color="#F4722B">
             <Box bg="#3E3E3E" p={6} rounded="md" w={420}>
                 <Formik
+                    enableReinitialize
                     initialValues={{
                         username: username,
                         password: password,
@@ -32,7 +30,6 @@ const Login = () => {
                     }}
                     onSubmit={async (values) => {
                         try {
-                            console.log(values.username + " | " + values.password + " | " + values.rememberMe);
                             await AuthService.login(values.username, values.password, values.rememberMe);
                             window.location.href = "/"
                         } catch (e: any) {
@@ -93,7 +90,7 @@ const Login = () => {
                                         }} />
                                     <FormErrorMessage>{errors.password}</FormErrorMessage>
                                 </FormControl>
-                                <Field as={Checkbox} id="rememberMe" name="rememberMe" colorScheme="orange">Emlékezz rám</Field>
+                                <Field as={Checkbox} id="rememberMe" name="rememberMe" colorScheme="orange" defaultChecked={AuthService.userDetails?.split(';')[2]}>Emlékezz rám</Field>
                                 <Button type="submit" colorScheme="orange" w="full">Bejelentkezés</Button>
                             </VStack>
                         </form>

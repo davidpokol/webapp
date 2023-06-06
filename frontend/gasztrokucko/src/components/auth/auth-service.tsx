@@ -41,7 +41,6 @@ class AuthServiceImpl {
     public logout() {
         console.log("TOKEN" + this.authToken);
         this.authToken = null;
-        this.userDetails = null;
         this.userName = null;
     }
 

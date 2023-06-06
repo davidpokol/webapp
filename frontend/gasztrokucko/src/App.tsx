@@ -21,6 +21,7 @@ function App() {
           <Route path='/:username' element={<ProfilePage />}/>
           <Route path='/create' element={<CreateRecipe />}/>
           <Route path='/recipe/:id' element={<RecipePage />}/>
+          <Route path='/recipe/:id/update' element={<CreateRecipe />}/>
         </Route>
       </Routes>
     </div>
