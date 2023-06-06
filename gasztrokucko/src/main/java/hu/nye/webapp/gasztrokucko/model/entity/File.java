@@ -18,7 +18,7 @@ public class File {
     private Long id;
 
     @NotBlank
-    @Column(name = "NAME", unique = true, length = 60)
+    @Column(name = "NAME", length = 60)
     private String name;
 
     private String contentType;

@@ -2,9 +2,9 @@ package hu.nye.webapp.gasztrokucko.controller;
 
 import hu.nye.webapp.gasztrokucko.exception.FileNotFoundException;
 import hu.nye.webapp.gasztrokucko.exception.InvalidRecipeRequestException;
+import hu.nye.webapp.gasztrokucko.exception.RecipeNotFoundException;
 import hu.nye.webapp.gasztrokucko.model.dto.FileDTO;
 import hu.nye.webapp.gasztrokucko.model.dto.RecipeDTO;
-import hu.nye.webapp.gasztrokucko.response.RecipeResponse;
 import hu.nye.webapp.gasztrokucko.service.FileService;
 import hu.nye.webapp.gasztrokucko.service.RecipeService;
 import hu.nye.webapp.gasztrokucko.util.FileUtil;
@@ -33,15 +33,15 @@ public class RecipeController {
     private final FileUtil fileUtil;
 
     @GetMapping
-    public ResponseEntity<List<RecipeResponse>> findAll() {
-        List<RecipeResponse> recipes = recipeService.findAll();
+    public ResponseEntity<List<RecipeDTO>> findAll() {
+        List<RecipeDTO> recipes = recipeService.findAll();
         return ResponseEntity.ok().body(recipes);
     }
 
     @GetMapping("/{id}")
-    public ResponseEntity<RecipeResponse> findById(@PathVariable Long id) {
+    public ResponseEntity<RecipeDTO> findById(@PathVariable Long id) {
 
-        Optional<RecipeResponse> recipe = recipeService.findById(id);
+        Optional<RecipeDTO> recipe = recipeService.findById(id);
 
         return recipe.map(ResponseEntity::ok)
                 .orElseGet(() -> ResponseEntity.notFound().build());
@@ -76,6 +76,11 @@ public class RecipeController {
 
     @PostMapping("/{id}/image")
     public ResponseEntity<?> uploadFile(@PathVariable("id") Long photoId, @RequestParam("photo")MultipartFile file) throws IOException {
+        if (recipeService.findById(photoId).isEmpty()) {
+            throw new RecipeNotFoundException(String.format(
+                    "Recipe not found with ID: %s", photoId
+            ));
+        }
         String uploadFile = fileService.uploadFile(photoId, file);
         return ResponseEntity.status(HttpStatus.CREATED)
                 .body(uploadFile);

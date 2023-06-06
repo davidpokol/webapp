@@ -1,21 +1,16 @@
 package hu.nye.webapp.gasztrokucko.service.impl;
 
-import hu.nye.webapp.gasztrokucko.exception.FileParseException;
 import hu.nye.webapp.gasztrokucko.exception.RecipeNotFoundException;
 import hu.nye.webapp.gasztrokucko.model.dto.RecipeDTO;
-import hu.nye.webapp.gasztrokucko.model.entity.File;
 import hu.nye.webapp.gasztrokucko.model.entity.Recipe;
 import hu.nye.webapp.gasztrokucko.model.entity.User;
 import hu.nye.webapp.gasztrokucko.repository.RecipeRepository;
 import hu.nye.webapp.gasztrokucko.repository.UserRepository;
-import hu.nye.webapp.gasztrokucko.response.RecipeResponse;
 import hu.nye.webapp.gasztrokucko.service.RecipeService;
 import lombok.AllArgsConstructor;
 import org.modelmapper.ModelMapper;
 import org.springframework.stereotype.Service;
-import org.springframework.web.multipart.MultipartFile;
 
-import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
@@ -32,16 +27,16 @@ public class RecipeServiceImpl implements RecipeService {
     private final UserRepository userRepository;
 
     @Override
-    public List<RecipeResponse> findAll() {
+    public List<RecipeDTO> findAll() {
 
         List<Recipe> allRecipes = recipeRepository.findAll();
-        List<RecipeResponse> resultList = new ArrayList<>();
+        List<RecipeDTO> resultList = new ArrayList<>();
 
         for (Recipe recipe: allRecipes) {
 
             String createdBy = recipe.getCreatedBy().getUsername();
             recipe.setCreatedBy(null);
-            RecipeResponse map = modelMapper.map(recipe, RecipeResponse.class);
+            RecipeDTO map = modelMapper.map(recipe, RecipeDTO.class);
             map.setCreatedBy(createdBy);
             resultList.add(map);
         }
@@ -49,15 +44,15 @@ public class RecipeServiceImpl implements RecipeService {
     }
 
     @Override
-    public Optional<RecipeResponse> findById(Long id) {
+    public Optional<RecipeDTO> findById(Long id) {
 
         Optional<Recipe> foundRecipe = recipeRepository.findById(id);
 
         if (foundRecipe.isPresent()) {
             Recipe unwrappedRecipe = foundRecipe.get();
-            String createdBy = foundRecipe.get().getCreatedBy().getUsername();
-            foundRecipe.get().setCreatedBy(null);
-            RecipeResponse resultRecipe = modelMapper.map(unwrappedRecipe, RecipeResponse.class);
+            String createdBy = unwrappedRecipe.getCreatedBy().getUsername();
+            unwrappedRecipe.setCreatedBy(null);
+            RecipeDTO resultRecipe = modelMapper.map(unwrappedRecipe, RecipeDTO.class);
             resultRecipe.setCreatedBy(createdBy);
             return Optional.of(resultRecipe);
         }
@@ -99,7 +94,7 @@ public class RecipeServiceImpl implements RecipeService {
                     String.format("Recipe not found with id=%d", id)
             );
         }
-        Optional<RecipeResponse> byId = findById(recipeDTO.getId());
+        Optional<RecipeDTO> byId = findById(recipeDTO.getId());
 
         if (byId.isEmpty()) {
             throw new RecipeNotFoundException();
