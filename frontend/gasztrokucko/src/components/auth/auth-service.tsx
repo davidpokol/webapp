@@ -5,6 +5,7 @@ import { useToast } from '@chakra-ui/react'
 const TOKEN = 'authToken';
 const REMEMBER_ME = 'remember';
 const API_URL = '/users';
+const USERNAME = 'username';
 
 class AuthServiceImpl {
     private storage: Storage;
@@ -28,6 +29,7 @@ class AuthServiceImpl {
         const authToken = await res.data;
         this.authToken = authToken;
 
+        this.userName = username;
         if (rememberMe) {
             this.userDetails = username + ";" + password + ";" + rememberMe;
             console.log(this.userDetails);
@@ -39,6 +41,8 @@ class AuthServiceImpl {
     public logout() {
         console.log("TOKEN" + this.authToken);
         this.authToken = null;
+        this.userDetails = null;
+        this.userName = null;
     }
 
     public get authToken(): string | null {
@@ -62,6 +66,18 @@ class AuthServiceImpl {
             this.localStorage.setItem(REMEMBER_ME, data);
         } else if (this.userDetails) {
             this.localStorage.removeItem(REMEMBER_ME);
+        }
+    }
+
+    public get userName(): string | null {
+        return this.localStorage.getItem(USERNAME) ?? null;
+    }
+
+    public set userName(name: string | null) {
+        if (name) {
+            this.localStorage.setItem(USERNAME, name);
+        } else if (this.userName) {
+            this.localStorage.removeItem(USERNAME);
         }
     }
 

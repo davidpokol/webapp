@@ -2,7 +2,6 @@ import React, { useEffect, useState } from 'react';
 import { Formik, Field, useFormik } from 'formik'
 import { Box, Button, Checkbox, Flex, FormControl, FormErrorMessage, FormLabel, Input, VStack, useToast } from '@chakra-ui/react';
 import { AuthService } from './auth-service';
-import 'react-toastify/dist/ReactToastify.css';
 import { AxiosError } from 'axios';
 
 const Login = () => {

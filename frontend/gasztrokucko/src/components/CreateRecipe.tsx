@@ -1,4 +1,4 @@
-import React, { useState, useCallback } from 'react';
+import React, { useState, useCallback, useEffect } from 'react';
 import axios from 'axios';
 import { Formik, Field } from 'formik';
 import {
@@ -14,11 +14,13 @@ import {
     RadioGroup,
     Select,
     Textarea,
-    VStack
+    VStack,
+    useToast
 } from '@chakra-ui/react';
 import { useDropzone } from 'react-dropzone';
 import moment from 'moment';
 import 'moment/locale/hu';
+import { AuthService } from './auth/auth-service';
 
 let img: File;
 
@@ -51,14 +53,25 @@ const DragAndDropImage = () => {
 }
 
 const CreateRecipe = () => {
+    const toast = useToast();
+
+    const [username, setUsername] = useState('');
+    useEffect(() => {
+        if (AuthService.userName) {
+            const name = AuthService.userName;
+            setUsername(name);
+        }
+    },[]) 
 
     const [ingredientsList, setIngredients] = useState('');
     const [ingredients, setIngredientsArray] = useState<string[]>([]);
+    const [imageId, setImageId] = useState();
 
     const handleIngredients = () => {
         setIngredientsArray(ingredientsList.split(/[;\r\n]+/).map((item) => item.trim()));
         console.log(ingredients);
     }
+
 
     return (
         <Flex bg="#F6E7C1" align="center" justify="center" h="100vh" color="#F4722B">
@@ -75,30 +88,58 @@ const CreateRecipe = () => {
                         instructions: "",
                         photo: ""
                     }}
-                    onSubmit={ async (values, { resetForm }) => {
+                    onSubmit={async (values, { resetForm }) => {
                         const postData = {
                             name: values.name,
-                            createdBy: "felhasználó",
+                            createdBy: username,
                             lastModified: moment().format('YYYY-MM-DD HH:mm:ss'),
                             recipeModificationType: "CREATED",
                             category: values.category,
                             difficulty: values.difficulty,
                             ingredients,
-                            instructions: values.instructions,
-                            photo: "logo192.png"
+                            instructions: values.instructions
                         };
                         //resetForm();
                         alert(JSON.stringify(postData, null, 2));
                         const res = await axios.post(`/recipes/add`, postData)
-                            /*.then(response => {
-
+                            .then(response => {
+                                const imageUpload = async () => {
+                                    const imageData = new FormData();
+                                    imageData.append("photo", img);
+                                    await axios.post(`/recipes/${response.data.id}/image`, imageData)
+                                        .then(response => {
+                                            toast({
+                                                title: 'Recept hozzáadása',
+                                                description: "Sikeres recept hozzáadás!",
+                                                status: 'success',
+                                                position: 'top',
+                                                duration: 9000,
+                                                isClosable: true,
+                                            });
+                                        })
+                                        .catch(error => {
+                                            toast({
+                                                title: 'Recept hozzáadása',
+                                                description: "Sikertelen recept hozzáadás!",
+                                                status: 'error',
+                                                position: 'top',
+                                                duration: 9000,
+                                                isClosable: true,
+                                            });
+                                        })
+                                }
+                                imageUpload();
                             })
                             .catch(error => {
-                                console.error('Hiba történt a kérés során!\n', error);
-                            })*/
-                            if (res.status !== 201) {
-                                alert(res.status);
-                            }
+                                toast({
+                                    title: 'Recept hozzáadása',
+                                    description: "Hiba történt a kérés során!",
+                                    status: 'error',
+                                    position: 'top',
+                                    duration: 9000,
+                                    isClosable: true,
+                                });
+                            })
                     }}
                 >
                     {({ handleSubmit, errors, touched }) => (
@@ -146,7 +187,7 @@ const CreateRecipe = () => {
                                 </FormControl>
                                 <FormControl
                                     isInvalid={!!errors.difficulty && touched.difficulty}>
-                                    <FormLabel htmlFor="difficulty">Kategória</FormLabel>
+                                    <FormLabel htmlFor="difficulty">Nehézség</FormLabel>
                                     <RadioGroup name="difficulty">
                                         <HStack spacing={4}>
                                             <Field as={Radio} value="EASY">Könnyű</Field>

@@ -8,6 +8,7 @@ import Registration from './components/auth/Registration';
 import Login from './components/auth/Login';
 import ProfilePage from './components/ProfilePage';
 import CreateRecipe from './components/CreateRecipe';
+import RecipePage from './components/recipes/RecipePage';
 
 function App() {
   return (
@@ -19,6 +20,7 @@ function App() {
           <Route path='/login' element={<Login />}/>
           <Route path='/:username' element={<ProfilePage />}/>
           <Route path='/create' element={<CreateRecipe />}/>
+          <Route path='/recipe/:id' element={<RecipePage />}/>
         </Route>
       </Routes>
     </div>

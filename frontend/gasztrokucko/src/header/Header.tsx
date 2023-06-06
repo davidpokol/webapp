@@ -10,11 +10,16 @@ import { AuthService } from "../components/auth/auth-service";
 const Header = () => {
     const [isLoggedIn, setIsLoggedIn] = useState<Boolean>();
     const [userToken, setUserToken] = useState<string | null>();
+    const [username, setUsername] = useState<string | null>();
 
     useEffect(() => {
         document.title = "Gasztrokuckó";
         setUserToken(AuthService.authToken);
-      }, []);
+    }, []);
+
+    useEffect(() => {
+        setUsername(AuthService.userName);
+    }, [userToken]);
 
     const handleLogout = () => {
         AuthService.logout();
@@ -28,12 +33,12 @@ const Header = () => {
 
                     <Box as={Link} to="/">
                         <Image src="gasztrokucko_logo.png" h="50px" />
-                    </Box>                   
+                    </Box>
 
                     <Menu>
-                        <MenuButton as={Avatar} size="md" src="avatar.png" cursor="pointer"/>
+                        <MenuButton as={Avatar} size="md" src="avatar.png" cursor="pointer" />
                         <MenuList>
-                            <MenuItem as={Link} to={"/username"}>Profil</MenuItem>
+                            <MenuItem as={Link} to={`/${username}`}>Profil</MenuItem>
                             <MenuItem as={Link} to={"/create"}>Recept hozzáadása</MenuItem>
                             <MenuItem onClick={handleLogout}>Kijelentkezés</MenuItem>
                         </MenuList>

@@ -1,5 +1,6 @@
 .App {
   text-align: center;
+  height: 100vh;
 }
 
 .App-logo {
@@ -11,6 +12,10 @@
   .App-logo {
     animation: App-logo-spin infinite 20s linear;
   }
+}
+
+#root{
+  height: 100vh;
 }
 
 .App-header {
@@ -41,4 +46,6 @@ main,html{
   background-color: #F6E7C1;
   height: 100vh;
 }
+
+
 

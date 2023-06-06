@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useEffect, useState } from "react";
 import {
     Input,
     InputGroup,
@@ -10,25 +10,36 @@ import {
     Button,
     Link
 } from "@chakra-ui/react";
-import RecipeCards from "./recipes/RecipeCards";
+import RecipeCards, { Recipe } from "./recipes/RecipeCards";
 import "./ProfilePage.css";
+import { AuthService } from "./auth/auth-service";
+import axios, { all } from "axios";
+
 
 const ProfilePage = () => {
+    const [allRecipes, setAllRecipes] = useState<Recipe[]>([]);
+
+    useEffect(() => {
+        axios
+            .get(`/users/${AuthService.userName}/recipes`)
+            .then(response => {
+                setAllRecipes(response.data);
+            })
+            .catch(error => {
+                console.error('Hiba történt a kérés során!\n', error);
+            });
+    }, []);
+
     return (
         <VStack spacing={4}>
-            <Box className="tillana-font">
-                <Flex bg="#F6E7C1" justify="center" p={10}>
-                    <Button as={Link} borderRadius={15} w="20vh" marginRight={3} bg="#B3A78C">Saját</Button>
-                    <Button as={Link} borderRadius={15} w="20vh" bg="#B3A78C">Kedvencek</Button>
-                </Flex>
-            </Box>
             <Box p={5} className="tillana-font">
                 <div>
-                    <RecipeCards recipes={[]}></RecipeCards>
+                    <RecipeCards recipes={allRecipes}></RecipeCards>
                 </div>
             </Box>
-        </VStack >
-    )
-}
+        </VStack>
+    );
+};
+
 
 export default ProfilePage
